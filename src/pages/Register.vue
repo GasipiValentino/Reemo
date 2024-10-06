@@ -62,7 +62,7 @@ export default {
     <form 
       action="#" 
       @submit.prevent="handleSubmit"
-      class="max-w-md mx-auto"   
+      class="max-w-md w-96 m-auto"   
       >
       <Heading>Crear una Cuenta</Heading>
     

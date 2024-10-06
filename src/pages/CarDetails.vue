@@ -1,17 +1,22 @@
-
 <script>
-import Heading from '../components/Heading.vue';
-import Comments from '../components/Comments.vue';
-
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../services/firebase.js';
+
+import Heading from '../components/Heading.vue';
+import Comments from '../components/Comments.vue';
+import Transmition from '../icons/Transmition.vue';
+import Chasis from '../icons/Chasis.vue';
+import Engine from '../icons/Engine.vue';
+import GasStation from '../icons/GasStation.vue';
+import Accelerometer from '../icons/Accelerometer.vue';
+import Check from '../icons/Check.vue';
 
 // let unsubscribeAuth = () => {};
 
 export default {
     props: ['id'],
     name: 'CarDetails',
-    components: { Heading, Comments },
+    components: { Heading, Comments, Transmition, Chasis, Engine, GasStation, Accelerometer, Check },
     data() {
     return {
       car: null,
@@ -58,54 +63,77 @@ export default {
       <div class="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
 
         <div class="shrink-0 max-w-md lg:max-w-lg mx-auto">
-          <img class="w-full hidden" src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg" alt="" />
+          <img class="w-full" src="/public/Car-Img.png" alt="" />
         </div>
 
         <div class="mt-6 sm:mt-8 lg:mt-0">
-          <h1 class="text-xl font-semibold text-gray-900 sm:text-2xl">
+          <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">
             {{ car.marca }} {{ car.modelo }}, {{ car.año }}
           </h1>
           <div class="mt-4 sm:items-center sm:gap-4 sm:flex">
-            <p class="text-2xl font-extrabold text-gray-900 sm:text-3xl">
+            <p class="text-2xl font-bold text-gray-900 sm:text-3xl">
               ${{ car.precio }} /día
             </p>
-
-            <div class="flex items-center gap-2 mt-2 sm:mt-0">
-              <div class="flex items-center gap-1">
-              </div>
-              <p
-                class="text-sm font-medium leading-none text-gray-500"
-              >
-                (5.0)
-              </p>
-              <a
-                class="text-sm font-medium leading-none text-gray-900 underline hover:no-underline"
-              >
-                345 Reviews
-              </a>
-            </div>
           </div>
 
           <div class="flex items-center gap-4 mt-4">
-            <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800">
-              Estado: {{ car.estado }}
+            <span class="flex items-center gap-2 w-fit bg-blue-100 py-1 px-2 rounded-full">
+              <Check/>
+              <p class="text-sm font-medium text-blue-800">
+                <strong class="hidden md:inline">Estado:</strong>
+                {{ car.estado }}
+              </p>
             </span>
-            <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-800">
-              Kilometraje: {{ car.kilometraje }} km
+
+            <span class="flex items-center gap-2 w-fit bg-green-100 py-1 px-2 rounded-full">
+              <Accelerometer/>
+              <p class="text-sm font-medium text-green-800">
+                <strong class="hidden md:inline">Kilometraje:</strong>
+                {{ car.kilometraje }} km
+              </p>
             </span>
           </div>
 
-          <hr class="my-6 md:my-8 border-gray-200 dark:border-gray-800" />
+          <hr class="my-6 md:my-8 border-gray-200 " />
 
           <p class="mb-6 text-gray-500">
             {{ car.description }}
           </p>
 
-          <ul class="list-disc list-inside text-gray-600">
-          <li><strong>Chasis:</strong> {{ car.chasis }}</li>
-          <li><strong>Motor:</strong> {{ car.motor }}</li>
-          <li><strong>Transmisión:</strong> {{ car.transmision }}</li>
-        </ul>
+          <ul class="flex flex-wrap gap-2 text-gray-600">
+            <li class="flex items-center gap-2 w-fit bg-gray-200 py-2 px-4 rounded-full">
+              <Engine/>
+              <p class="text-md font-medium text-gray-500 ">
+                <strong class="hidden md:inline">Motor:</strong>
+                {{ car.motor }}
+              </p>
+            </li>
+
+            <li class="flex items-center gap-2 w-fit bg-gray-200 py-2 px-4 rounded-full">
+              <Chasis/>
+              <p class="text-md font-medium text-gray-500 ">
+                <strong class="hidden md:inline">Chasis:</strong>
+                {{ car.chasis }}
+              </p>
+            </li>
+
+            <li class="flex items-center gap-2 w-fit bg-gray-200 py-2 px-4 rounded-full">
+              <Transmition/>
+              <p class="text-md font-medium text-gray-500 ">
+                <strong class="hidden md:inline">Transmisión:</strong>
+                {{ car.transmision }}
+              </p>
+            </li> 
+
+            <li class="flex items-center gap-2 w-fit bg-gray-200 py-2 px-4 rounded-full">
+              <GasStation/>
+              <p class="text-md font-medium text-gray-500 ">
+                <strong class="hidden md:inline">Combustible:</strong>
+                {{ car.combustible }}
+              </p>
+            </li> 
+          </ul>
+
         </div>
       </div>
     </div>

@@ -79,7 +79,7 @@ export default {
   <form 
   action="#"
   @submit.prevent="handleSubmit"
-  class="max-w-md my-4 mx-auto" 
+  class="max-w-md w-96 m-auto my-4" 
   >
     <Heading>Registrar vehículo</Heading>
 
@@ -335,7 +335,7 @@ export default {
         id="description" 
         name="description" 
         rows="4" 
-        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"  
+        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 resize-none"  
         placeholder="Escribí una descripción del auto"></textarea>
     </div>
     <button

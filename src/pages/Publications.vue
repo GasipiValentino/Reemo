@@ -1,14 +1,16 @@
 <script>
-import Heading from '../components/Heading.vue';
-import TarjetasVehiculos from '../components/TarjetasVehiculos.vue'; 
 import { subscribeToNewPublication } from '../services/publication.js';
 import { collection, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../services/firebase.js';
 import { subscribeToAuthState } from '../services/auth.js';
 
+import Heading from '../components/Heading.vue';
+import TarjetasVehiculos from '../components/TarjetasVehiculos.vue'; 
+import AddIcon from '../icons/AddIcon.vue';
+
 export default {
   name: 'Publications',
-  components: { Heading, TarjetasVehiculos },
+  components: { Heading, TarjetasVehiculos, AddIcon },
   data() {
     return {
       cars: [],
@@ -82,14 +84,20 @@ export default {
       <template v-if="loggedUser.id == null">
         <router-link 
           to="/Login" 
-          class="fixed bottom-0 right-0 m-8 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center"
-          >Publicar Vehículo</router-link>
+          class="fixed gap-4 md:flex items-center justify-center bottom-0 right-0 m-8 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full md:rounded-lg text-md px-2 md:px-4 py-2 text-center"
+          >
+          <span class="hidden md:block">Publicar Vehículo</span>
+          <AddIcon/>
+        </router-link>
       </template>
       <template v-else>
         <router-link 
           to="/Publish" 
-          class="fixed bottom-0 right-0 m-8 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center"
-          >Publicar Vehículo</router-link>
+          class="fixed gap-4 md:flex items-center justify-center bottom-0 right-0 m-8 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full md:rounded-lg text-md px-2 md:px-4 py-2 text-center"
+          >
+          <span class="hidden md:block">Publicar Vehículo</span>
+          <AddIcon/>
+        </router-link>
       </template>
     
     <!-- <div 
@@ -102,7 +110,7 @@ export default {
 
 
 
-    <div class="max-w-md mx-auto md:max-w-screen-xl p-4 mb-4 grid gap-4 md:grid-cols-2 md:mb-8 lg:grid-cols-4">
+    <div class="max-w-md mx-auto md:max-w-screen-xl p-4 mb-4 grid gap-4 md:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4">
       <div 
         v-for="(car, index) in cars" 
         :key="index" 

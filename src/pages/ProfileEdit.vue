@@ -57,7 +57,7 @@ export default{
   <form 
   action="#"
   @submit.prevent="handleSubmit"
-  class="max-w-md mx-auto" 
+  class="max-w-md w-96 m-auto" 
   >
     <Heading>Editar mi Perfil</Heading>
     <div v-if="errorMsg" class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">

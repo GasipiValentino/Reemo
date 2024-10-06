@@ -74,10 +74,10 @@ export default {
           <footer class="flex justify-between items-center mb-2">
               <div class="flex items-center">
                   <p class="inline-flex items-center mr-3 text-sm text-gray-900  font-semibold"><img class="mr-2 w-6 h-6 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="">@{{ comment.user_Name }}</p>
-                  <p class="text-sm text-gray-600 dark:text-gray-400"><time pubdate datetime="2022-02-12" title="February 12th, 2022">{{ comment.user_email }}</time></p>
+                  <p class="text-sm text-gray-600 "><time pubdate datetime="2022-02-12" title="February 12th, 2022">{{ comment.user_email }}</time></p>
               </div>
           </footer>
-          <p class="text-gray-500 dark:text-gray-400">{{ comment.text }}</p>
+          <p class="text-gray-500 ">{{ comment.text }}</p>
       </article>
 
       <form class="mb-6" action="#" @submit.prevent="handleSubmit">
@@ -86,12 +86,12 @@ export default {
           <textarea 
             v-model="newComment.text"
             id="message" rows="6"
-            class="px-0 w-full text-sm text-gray-900 border-0 resize-none focus:ring-0 focus:outline-none  dark:placeholder-gray-400 "
+            class="px-0 w-full text-sm text-gray-900 border-0 resize-none focus:ring-0 focus:outline-none   "
             placeholder="Escribir un comentario..." 
             required></textarea>
         </div>
         <button type="submit"
-          class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">
+          class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200  hover:bg-blue-800">
           Enviar
         </button>
       </form>

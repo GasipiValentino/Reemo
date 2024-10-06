@@ -11,7 +11,7 @@ export default {
 </script>
 
 <template>
-  <div class="max-w-md mx-auto p-4 sm:px-8 sm:py-4 flex rounded-xl items-center bg-blue-100">
+  <div class="max-w-md w-96 mx-auto p-4 sm:px-8 sm:py-4 flex rounded-xl items-center bg-blue-100">
     <div class="flex-shrink-0">
         <img class="w-8 h-8 rounded-full" :src="`https://unavatar.io/${user.userName}`" :alt="`Foto de perfil de ${user.userName}`">
     </div>
