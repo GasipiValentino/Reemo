@@ -26,7 +26,8 @@ export default {
         this.loading = true;
         const carsCollection = collection(db, 'cars');
         const carsSnapshot = await getDocs(carsCollection);
-        this.cars = carsSnapshot.docs.map(doc => ({id: doc.id, ...doc.data()})); 
+        this.cars = carsSnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}))
+        .filter(car => car.user_id !== this.loggedUser.id);
       } catch (error) {
         console.error('Error al buscar autos:', error);
       }finally {
@@ -46,15 +47,22 @@ export default {
       this.$router.push({ name: 'CarDetails', params: { id: carId } });
   }
   },
-  created() {
-    this.fetchCars();
-  },
+  // created() {
+  //   this.fetchCars();
+  // },
   mounted() {
-    subscribeToAuthState(newUserData => this.loggedUser = newUserData);
-    subscribeToNewPublication((newCars) => {
-      this.cars = newCars;
-    });
-  }
+  subscribeToAuthState(newUserData => {
+    this.loggedUser = newUserData;
+
+    if (this.loggedUser.id) {
+      this.fetchCars();  
+    }
+  });
+
+  subscribeToNewPublication((newCars) => {
+    this.cars = newCars;
+  });
+},
 };
 </script>
 

@@ -67,8 +67,7 @@ export default {
           </h1>
           <div class="mt-4 sm:items-center sm:gap-4 sm:flex">
             <p class="text-2xl font-extrabold text-gray-900 sm:text-3xl">
-              <!-- ${{ car.precio }} -->
-              $45.000 /día
+              ${{ car.precio }} /día
             </p>
 
             <div class="flex items-center gap-2 mt-2 sm:mt-0">
@@ -99,7 +98,7 @@ export default {
           <hr class="my-6 md:my-8 border-gray-200 dark:border-gray-800" />
 
           <p class="mb-6 text-gray-500">
-            {{ car.descripcion }}
+            {{ car.description }}
           </p>
 
           <ul class="list-disc list-inside text-gray-600">

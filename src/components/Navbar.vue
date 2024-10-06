@@ -17,7 +17,7 @@ export default {
 </script>
 
 <template>
-  <nav class="fixed top-0 left-0 right-0 bg-white border-gray-200 dark:bg-gray-900">
+  <nav class="fixed top-0 z-10 left-0 right-0 bg-white border-gray-200 dark:bg-gray-900">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
 
       <router-link to="/" class="flex items-center space-x-3 rtl:space-x-reverse">

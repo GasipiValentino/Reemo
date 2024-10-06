@@ -1,7 +1,7 @@
 import { addDoc, collection, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
 import {db} from './firebase'
 
-export function saveCars({ user_id, email, marca, modelo, año, chasis, motor, combustible, kilometraje, patente, transmision, puertas, asientos, description }){
+export function saveCars({ user_id, email, marca, modelo, año, chasis, motor, combustible, kilometraje, patente, transmision, puertas, asientos, description, estado, precio }){
     const carsRef = collection(db, 'cars');
     return addDoc(carsRef, {
         user_id,
@@ -18,6 +18,8 @@ export function saveCars({ user_id, email, marca, modelo, año, chasis, motor, c
         puertas,
         asientos,
         description,
+        estado,
+        precio,
         created_at: serverTimestamp(),
     });
 }
@@ -44,6 +46,8 @@ export function subscribeToNewPublication(callback){
                 puertas: doc.data().puertas,
                 asientos: doc.data().asientos,
                 description: doc.data().description,
+                estado: doc.data().estado,
+                precio: doc.data().precio,
             }
         });
         // Invocamos el callback que nos pasaron como parámetro y le mandamos los mensajes.

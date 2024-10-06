@@ -26,7 +26,7 @@ export default {
       <img class="mx-auto hidden h-full " src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg" alt="" />
     </div>
     <div class="pt-6">
-      <a href="#" class="text-lg font-semibold leading-tight text-gray-900 hover:underline "> {{ car.modelo }} {{ car.marca }}, {{ car.año }}</a>
+      <a href="#" class="text-lg font-semibold leading-tight text-gray-900 hover:underline ">{{ car.marca }} {{ car.modelo }}, {{ car.año }}</a>
 
       <ul class="mt-2 flex items-center gap-4">
         <svg class="h-4 w-4 text-gray-500 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -45,7 +45,7 @@ export default {
       </ul>
 
       <div class="mt-4 flex items-center justify-between gap-4">
-        <p class="text-2xl font-extrabold leading-tight text-gray-900 ">${{ car.precio }}45000</p>
+        <p class="text-2xl font-extrabold leading-tight text-gray-900 ">${{ car.precio }}</p>
 
         <button @click="goToCarDetails(car.id)" type="button" class="inline-flex items-center rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4  focus:ring-blue-300 ">
           Ver Detalles
