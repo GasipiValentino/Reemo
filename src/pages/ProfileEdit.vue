@@ -60,14 +60,15 @@ export default{
   class="max-w-md w-96 m-auto" 
   >
     <Heading>Editar mi Perfil</Heading>
-    <div v-if="errorMsg" class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
-      {{ errorMsg }}
+    <div v-if="editData.userName == '' || editData.name == '' || editData.lastName == ''" class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
+      Los datos ingresados no pueden estar vacíos
     </div>
     <div class="relative z-0 w-full mb-5 group">
       <input
         id="userName"
         class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
         placeholder=" "
+        required
         v-model="editData.userName"
       ></input>
       <label 
@@ -80,6 +81,7 @@ export default{
         type="text"
         id="name"
         placeholder=" "
+        required
         class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
         v-model="editData.name"
       >
@@ -93,6 +95,7 @@ export default{
         type="text"
         id="lastName"
         placeholder=" "
+        required
         class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
         v-model="editData.lastName"
       >

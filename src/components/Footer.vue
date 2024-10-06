@@ -14,22 +14,22 @@ export default {
         </a>
         <ul class="flex flex-wrap items-center mb-6 text-sm font-medium text-gray-500 sm:mb-0 ">
           <li>
-            <a href="#" class="hover:underline me-4 md:me-6">About</a>
+            <a class="hover:underline me-4 md:me-6">Sobre nosotros</a>
           </li>
           <li>
-            <a href="#" class="hover:underline me-4 md:me-6">Privacy Policy</a>
+            <a class="hover:underline me-4 md:me-6">Politicas de Seguridad</a>
           </li>
           <li>
-            <a href="#" class="hover:underline me-4 md:me-6">Licensing</a>
+            <a class="hover:underline me-4 md:me-6">Licencias</a>
           </li>
           <li>
-            <a href="#" class="hover:underline">Contact</a>
+            <a class="hover:underline">Contactos</a>
           </li>
         </ul>
       </div>
       <hr class="my-6 border-gray-200 sm:mx-auto  lg:my-8" />
       <span class="block text-sm text-gray-500 sm:text-center ">
-        © 2023 Reemo. All Rights Reserved.
+        © 2023 Reemo. Todos los derechos reservados.
       </span>
     </div>
   </footer>

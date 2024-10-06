@@ -37,6 +37,8 @@ export default {
                 this.errorMsg = 'La contraseña debe tener al menos 6 caracteres'
             }else if(errorCode === 'auth/email-already-in-use'){
                 this.errorMsg = 'El email utilizado ya tiene un usuario asignado'
+            }else if(errorCode === 'auth/invalid-email'){
+                this.errorMsg = 'El email ingresado no es válido'
             }
 
         console.error("[Login.vue] Error al registrar: ", error);
