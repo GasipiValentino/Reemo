@@ -54,7 +54,7 @@ export default {
         console.error('No se pudo obtener los datos del usuario.');
       }
     });
-    console.log('Id de cada comentario ',this.carId)
+    // console.log('Id de cada comentario ',this.carId)
   },
   unmounted() {
     unsubscribeAuth();
@@ -85,7 +85,7 @@ export default {
 
       <form class="mb-6" action="#" @submit.prevent="handleSubmit">
         <div class="py-2 px-4 mb-4 bg-white rounded-lg rounded-t-lg border border-gray-200">
-          <label for="message" class="sr-only">Your comment</label>
+          <label for="message" class="sr-only">Tu comentario</label>
           <textarea 
             v-model="newComment.text"
             id="message" rows="6"

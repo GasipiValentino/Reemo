@@ -51,11 +51,11 @@ export default {
     },
     mounted() {
       unsubscribeAuth = subscribeToAuthState(newUserData => {
-        console.log('Datos del usuario:', newUserData); 
+        // console.log('Datos del usuario:', newUserData); 
         this.loggedUser = newUserData;
         if (this.loggedUser.id) {
           this.fetchCars(); 
-          console.log('Cars:', this.cars) 
+          // console.log('Cars:', this.cars) 
         }
       });
     }, 

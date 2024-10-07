@@ -17,7 +17,7 @@ export default {
             <a class="hover:underline me-4 md:me-6">Sobre nosotros</a>
           </li>
           <li>
-            <a class="hover:underline me-4 md:me-6">Politicas de Seguridad</a>
+            <a class="hover:underline me-4 md:me-6">Políticas de Seguridad</a>
           </li>
           <li>
             <a class="hover:underline me-4 md:me-6">Licencias</a>

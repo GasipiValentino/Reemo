@@ -10,13 +10,14 @@ import Engine from '../icons/Engine.vue';
 import GasStation from '../icons/GasStation.vue';
 import Accelerometer from '../icons/Accelerometer.vue';
 import Check from '../icons/Check.vue';
+import Cross from '../icons/Cross.vue';
 
 // let unsubscribeAuth = () => {};
 
 export default {
     props: ['id'],
     name: 'CarDetails',
-    components: { Heading, Comments, Transmition, Chasis, Engine, GasStation, Accelerometer, Check },
+    components: { Heading, Comments, Transmition, Chasis, Engine, GasStation, Accelerometer, Check, Cross },
     data() {
     return {
       car: null,
@@ -29,12 +30,12 @@ export default {
     this.errorMsg = '';
     try{
       this.loading = true;
-      console.log('ID del auto:', this.id);
+      // console.log('ID del auto:', this.id);
     const carId = this.id;
     const carDoc = doc(db, 'cars', carId); 
       const carSnapshot = await getDoc(carDoc); 
       if (carSnapshot.exists()) {
-        console.log('Documento encontrado:'), 
+        // console.log('Documento encontrado:'), 
         this.car = carSnapshot.data(); 
         this.car.id = carSnapshot.id;
       }
@@ -76,14 +77,28 @@ export default {
             </p>
           </div>
 
+          <!--  -->
+
           <div class="flex items-center gap-4 mt-4">
-            <span class="flex items-center gap-2 w-fit bg-blue-100 py-1 px-2 rounded-full">
+            <div v-if="car.estado == 'Bueno' || car.estado == 'Excelente'">
+              <span class="flex items-center gap-2 w-fit bg-blue-100 py-1 px-2 rounded-full">
               <Check/>
               <p class="text-sm font-medium text-blue-800">
                 <strong class="hidden md:inline">Estado:</strong>
                 {{ car.estado }}
               </p>
             </span>
+            </div>
+
+            <div v-else>
+              <span class="flex items-center gap-2 w-fit bg-red-100 py-1 px-2 rounded-full">
+                <Cross />
+              <p class="text-sm font-medium text-red-800">
+                <strong class="hidden md:inline">Estado:</strong>
+                {{ car.estado }}
+              </p>
+            </span>
+            </div>
 
             <span class="flex items-center gap-2 w-fit bg-green-100 py-1 px-2 rounded-full">
               <Accelerometer/>
@@ -141,7 +156,7 @@ export default {
   </section>
 </div>
 <div v-else>
-  <p>Cargando...</p>
+  <p class="text-center">Cargando...</p>
 </div>
 
 
