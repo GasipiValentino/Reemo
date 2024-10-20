@@ -55,7 +55,7 @@ export default{
           this.$router.push('/Profile');
         }
       },
-      // Previsualizar y guardar el archivo seleccionado hola
+      // Previsualizar y guardar el archivo seleccionado
       handleFileSelection(ev) {
         this.editData.photo = ev.target.files[0];
         const reader = new FileReader();
