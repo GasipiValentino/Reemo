@@ -3,26 +3,49 @@ import Heading from '../components/Heading.vue';
 import router from '../router/router';
 import { editMyProfile, subscribeToAuthState } from '../services/auth';
 
+import AddImg from '../icons/addImg.vue';
+
 let unsubscribeAuth = () => {};
 
 export default{
     name: 'ProfileEdit',
-    components: { Heading },
+    components: { Heading, AddImg },
     data() {
       return {
         editData: {
           userName: null,
           name: null,
           lastName: null,
+          photo: null,
+          photoPreview: null,
+          photoURL: null
         },
-        editing: false,
+        errorMessage: '',
+        editing: false
       };
     },
     methods: {
       async handleSubmit() {
+        this.errorMessage = '';
+        if (!this.editData.userName || !this.editData.name || !this.editData.lastName) {
+          this.errorMessage = 'Por favor completa todos los campos';
+          return;
+        }
+
+        if (!this.editData.photo && !this.editData.photoURL) {
+          this.errorMessage = 'Por favor selecciona una foto de perfil.';
+          return;
+        }
+
+        if (!this.editData.photo) {
+           this.editData.photo = this.editData.photoPreview;
+        }
+
+
         this.editing = true;
 
         try {
+          
           await editMyProfile({...this.editData});
           console.log("Perfil editado con éxito")
         } catch(error) {
@@ -31,6 +54,16 @@ export default{
           this.editing = false;
           this.$router.push('/Profile');
         }
+      },
+      // Previsualizar y guardar el archivo seleccionado
+      handleFileSelection(ev) {
+        this.editData.photo = ev.target.files[0];
+        const reader = new FileReader();
+        reader.addEventListener('load', () => {
+          this.editData.photoPreview = reader.result;
+        });
+        reader.readAsDataURL(this.editData.photo);
+
       }
     },
     mounted() {
@@ -38,6 +71,7 @@ export default{
         userName: userData.userName || '',
         name: userData.name || '',
         lastName: userData.lastName || '',
+        photoURL: userData.photoURL || ''
       });
     },
     unmounted() {
@@ -60,15 +94,49 @@ export default{
   class="max-w-md w-96 m-auto" 
   >
     <Heading>Editar mi Perfil</Heading>
-    <div v-if="editData.userName == '' || editData.name == '' || editData.lastName == ''" class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
-      Los datos ingresados no pueden estar vacíos
+    <div v-if="errorMessage" class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
+      {{ errorMessage }}
+    </div>
+    <div class="relative">
+      <figure class="flex items-center justify-center w-full mb-5">          
+          <img 
+            v-if="editData.photoPreview" 
+            :src="editData.photoPreview" 
+            alt="Foto de perfil" 
+            class="w-24 h-24 rounded-full"
+          />
+          <img 
+            v-else-if="editData.photoURL" 
+            :src="editData.photoURL" 
+            alt="Foto de perfil" 
+            class="w-24 h-24 rounded-full"
+          />
+          <img 
+            v-else 
+            src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" 
+            alt="Foto de perfil" 
+            class="w-24 h-24 rounded-full"
+          />
+
+      </figure>
+      <div class="absolute inset-0 flex items-center justify-center">
+        <label for="photo" class="w-24 w-24 aspect-square rounded-full flex items-center justify-center cursor-pointer">
+          <AddImg/>
+          <span class="sr-only">Seleccionar foto</span>
+      </label>
+      <input 
+        type="file" 
+        id="photo" 
+        @change="handleFileSelection"
+        class="hidden"
+        >
+      </div>
     </div>
     <div class="relative z-0 w-full mb-5 group">
       <input
         id="userName"
         class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
         placeholder=" "
-        required
         v-model="editData.userName"
       ></input>
       <label 
@@ -81,7 +149,6 @@ export default{
         type="text"
         id="name"
         placeholder=" "
-        required
         class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
         v-model="editData.name"
       >
@@ -95,7 +162,6 @@ export default{
         type="text"
         id="lastName"
         placeholder=" "
-        required
         class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
         v-model="editData.lastName"
       >
@@ -107,6 +173,8 @@ export default{
       <button
           type="submit"
           class="transition-all py-2 px-4 rounded bg-blue-700 text-white focus:bg-blue-500 hover:bg-blue-500 active:bg-blue-900"
-      >Guardar</button>
+      >
+      {{  !editing ? 'Aceptar' : 'Guardando...' }}
+    </button>
   </form>
 </template>

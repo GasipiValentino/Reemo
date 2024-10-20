@@ -14,7 +14,11 @@ export default {
     return {
       loggedUser: {
         id:null,
-        email:null
+        email:null,
+        photoURL: null,
+        userName: null,
+        name: null,
+        lastName: null,
       },
     };
   },

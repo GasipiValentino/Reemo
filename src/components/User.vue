@@ -13,7 +13,8 @@ export default {
 <template>
   <div class="max-w-md w-96 mx-auto p-4 sm:px-8 sm:py-4 flex rounded-xl items-center bg-blue-100">
     <div class="flex-shrink-0">
-        <img class="w-8 h-8 rounded-full" :src="`https://unavatar.io/${user.userName}`" :alt="`Foto de perfil de ${user.userName}`">
+        <img v-if="user.photoURL" class="w-8 h-8 rounded-full" :src="`${user.photoURL}`" :alt="`Foto de perfil de ${user.userName}`">
+        <!-- <img v-else :src="`https://unavatar.io/${user.userName}`" alt="Foto de perfil inexistente"> -->
     </div>
     <div class="flex-1 min-w-0 ms-4">
         <h2 class="text-lg font-semibold text-gray-900 truncate">

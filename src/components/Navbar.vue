@@ -24,7 +24,7 @@ export default {
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
 
       <router-link to="/" class="flex items-center space-x-3 rtl:space-x-reverse">
-        <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Reemo Logo" />
+        <!-- <img src="" class="h-8" alt="Reemo Logo" /> -->
         <span class="self-center text-white text-2xl font-semibold whitespace-nowrap ">Reemo</span>
       </router-link>
 

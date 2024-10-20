@@ -49,9 +49,6 @@ export default {
       this.$router.push({ name: 'CarDetails', params: { id: carId } });
   }
   },
-  // created() {
-  //   this.fetchCars();
-  // },
   mounted() {
   subscribeToAuthState(newUserData => {
     this.loggedUser = newUserData;
@@ -116,7 +113,7 @@ export default {
         :key="index" 
         class="border-4 rounded-lg shadow-md"
         >   
-        <TarjetasVehiculos :car="car"></TarjetasVehiculos>
+        <TarjetasVehiculos :car="car" @rentCar="rentCar(car)"></TarjetasVehiculos>
       </div>
     </div>
 </template>

@@ -6,12 +6,13 @@ import { subscribeToAuthState } from '../services/auth.js';
 import Heading from '../components/Heading.vue';
 import TarjetasVehiculos from '../components/TarjetasVehiculos.vue';
 import User from '../components/User.vue';
+import RentedCars from '../components/RentedCars.vue';
 
 let unsubscribeAuth = () => {};
 
 export default {
     name: 'MyProfile',
-    components: { Heading, TarjetasVehiculos, User },
+    components: { Heading, TarjetasVehiculos, User, RentedCars },
     data() {
         return {
           cars: [],
@@ -112,4 +113,9 @@ export default {
         </router-link>
     </template> -->
   </div>  
+
+  <!-- componente de autos alquilados -->
+  <div class="p-4 max-w-md mx-auto md:max-w-screen-lg">
+      <RentedCars :userId="loggedUser.id" />
+  </div>
 </template>

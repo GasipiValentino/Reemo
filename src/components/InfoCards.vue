@@ -38,7 +38,7 @@ export default {
             </div>
         </div>
     </div>
-</section>
+</section>                                          
 
 
 </template>

@@ -1,6 +1,8 @@
 <script>
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../services/firebase.js';
+import { subscribeToAuthState } from '../services/auth.js';
+import { subscribeToNewPublication } from '../services/publication.js';
 
 import Heading from '../components/Heading.vue';
 import Comments from '../components/Comments.vue';
@@ -44,6 +46,35 @@ export default {
     }
     this.loading = false;
     
+  },
+  mounted() {
+  subscribeToAuthState(newUserData => {
+    this.loggedUser = newUserData;
+
+  });
+
+  subscribeToNewPublication((newCars) => {
+    this.cars = newCars;
+  });
+  },
+  methods:  {
+    async rentCar(){
+      if (!this.car) return;
+      // console.log('usuario: ', this.$store.state.user.id)
+
+      try {
+        const carRef = doc(db, 'cars', this.car.id);
+        await updateDoc(carRef, {
+          rented: true,
+          rented_by: this.loggedUser.id
+        })
+        this.car.rented = true;
+        alert('Has alquilado el auto exitosamente');
+      } catch (error) {
+        console.error('Error al alquilar el auto:', error);
+        this.errorMsg = 'No se pudo completar el alquiler.';
+      }
+    }
   }
 
 }
@@ -92,7 +123,7 @@ export default {
 
             <div v-else>
               <span class="flex items-center gap-2 w-fit bg-red-100 py-1 px-2 rounded-full">
-                <Cross />
+              <Cross />
               <p class="text-sm font-medium text-red-800">
                 <strong class="hidden md:inline">Estado:</strong>
                 {{ car.estado }}
@@ -115,7 +146,7 @@ export default {
             {{ car.description }}
           </p>
 
-          <ul class="flex flex-wrap gap-2 text-gray-600">
+          <ul class="flex flex-wrap gap-2 text-gray-600 my-5">
             <li class="flex items-center gap-2 w-fit bg-gray-200 py-2 px-4 rounded-full">
               <Engine/>
               <p class="text-md font-medium text-gray-500 ">
@@ -148,6 +179,19 @@ export default {
               </p>
             </li> 
           </ul>
+
+          <!-- boton para alquilar un vehiculo -->
+
+          <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          v-if="!car.rented"
+          @click="rentCar"
+          >
+          <span class="hidden md:block">Alquilar</span>
+            <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+            </svg>
+          </button>
+          <span v-if="car.rented" class="bg-red-100 text-red-800 text-base font-medium me-2 px-2.5 py-0.5 rounded border border-red-400">Este auto ya esta alquilado</span>
 
         </div>
       </div>

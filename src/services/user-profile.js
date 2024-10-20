@@ -21,12 +21,10 @@ export async function createUserProfile(id, { email }) {
     await setDoc(userRef, { email });
 }
 
-export async function editUserProfile(id, {userName, name, lastName}) {
+export async function editUserProfile(id, data) {
     const userRef = doc(db, `users/${id}`);
 
     await updateDoc(userRef, {
-        userName,
-        name,
-        lastName,
+        ...data,
     });
 }

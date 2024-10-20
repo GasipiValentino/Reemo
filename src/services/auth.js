@@ -2,6 +2,7 @@ import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndP
 import { auth } from "./firebase";
 
 import { createUserProfile, editUserProfile, getUserProfileById } from "./user-profile";
+import { uploadFile, getFileURL } from "./file-storage";
 
 let userData = {
     id: null,
@@ -9,6 +10,12 @@ let userData = {
     userName: null,
     name: null,
     lastName: null,
+    photoURL: null,
+}
+
+// Sí existe usuario en localStorage, lo cargamos en userData. Hasta que Firebase complete la verificación.
+if(localStorage.getItem('user')) {
+    userData = JSON.parse(localStorage.getItem('user'));
 }
 
 // Variable donde almacenar los observers para el estado de autenticación.
@@ -16,43 +23,36 @@ let observers = [];
 
 onAuthStateChanged(auth, user => {
     if(user) {
-        userData = {
+        updateUserData({
             id: user.uid,
             email: user.email,
             userName: null,
-        }
+            photoURL: user.photoURL,
+        });
+        localStorage.setItem('user', JSON.stringify(userData));
 
         // Buscamos los datos del perfil, para actualizar los datos del usuario autenticado.
         getUserProfileById(user.uid)
             .then(profile => {
-                userData = {
-                    ...userData,
+                updateUserData({
                     name: profile.name,
                     lastName: profile.lastName,
                     userName: profile.userName,
-                }
-
-                notifyAll();
+                });
             });
     } else {
-        userData = {
+        updateUserData({
             id: null,
             email: null,
             userName: null,
             name: null,
             lastName: null,
-        }
+        });
+        localStorage.removeItem('user');
     }
-    notifyAll();
 });
 
 export async function login({email, password}) {
-    // Autenticamos usando la función signInWithEmailAndPassword() de Firebase Auth.
-    // Esta función recibe 3 parámetros:
-    // 1. La referencia a Auth.
-    // 2. El email.
-    // 3. El password.
-    // Retorna una promesa que se resuelve con el objeto UserCredentials.
     await signInWithEmailAndPassword(auth, email, password);
     return true;
 }
@@ -62,10 +62,6 @@ export async function login({email, password}) {
  * @param {{email: string, password: string}} data
  */
 export async function register({email, password}) {
-    // Para registrar un usuario, necesitamos grabarlo tanto en Authentication como en Firestore.
-    // A diferencia de lo que pasó con el editar perfil, acá sí vamos a necesitar hacer las
-    // peticiones a Authentication y Firestore en serie, y no en paralelo. La razón es que
-    // para crear el documento en Firestore necesitamos tener el id del usuario en Authentication.
     try {
         // Registramos en Authentication...
         const credentials = await createUserWithEmailAndPassword(auth, email, password);
@@ -80,29 +76,38 @@ export async function register({email, password}) {
 
 /**
  * 
- * @param {{user: string, name: string, lastName: string}} data
+ * @param {{user: string, name: string, lastName: string, photo: File}} data
  * @return {Promise<void>}
  */
-export async function editMyProfile({userName, name, lastName}) {
+export async function editMyProfile({userName, name, lastName, photo}) {
     try {
+        // Creamos el nombre del recurso que queremos crear.
+        const filepath = `users/${userData.id}/avatar.jpg`;
+
+        // Subimos el archivo
+        await uploadFile(filepath, photo);
+
+        // Obtener URL pública del avatar de usuario.
+        const photoURL = await getFileURL(filepath);
+
+        // Actualizamos el perfil en Authentication.
         // auth.currentUser => Retorna el objeto User de Firebase Auth con el usuario autenticado.
-        const promiseAuth = updateProfile(auth.currentUser, {userName});
+        const promiseAuth = updateProfile(auth.currentUser, {userName, photoURL});
 
         // Actualizamos el perfil del usuario en Firestore.
-        const promiseProfile = editUserProfile(userData.id, {userName, name, lastName});
+        const promiseProfile = editUserProfile(userData.id, {userName, name, lastName, photoURL});
 
         // Esperamos a que ambas promesas se completen.
         await Promise.all([promiseAuth, promiseProfile]);
 
         // Para que los camnames se vean reflejados, actualizamos la info de userData con los
         // nuevos datos, y notificamos a los observers.
-        userData = {
-            ...userData,
+        updateUserData({
             userName,
             name,
             lastName,
-        }
-        // notifyAll();
+            photoURL,
+        });
     } catch (error) {
         console.error('[auth.js editMyProfile] Error al editar los datos del perfil: ', error);
         throw error;
@@ -113,40 +118,8 @@ export async function logout() {
     return signOut(auth);
 }
 
-/*--------------------------------------------------------------
-| Patrón de Diseño: Observer
-+---------------------------------------------------------------
-| El patrón Observer permitir definir una relación de 1 a muchos
-| entre elementos del sistema.
-| Específicamente, define un sujeto ("Subject") que es de interés
-| de muchos otros saber cada vez que cambia.
-| Esos "muchos" interesados en saber cómo cambia van a poder 
-| "observar" al sujeto, para que éste les informe cada vez que
-| cambie su estado.
-| Para ser "notificados" de estos camnames, los "observers" deben
-| pedirle al sujeto que los notifique. Este proceso se suele hacer
-| pasando un objeto o callback que el sujeto ejecute cada vez que
-| cambia.
-| Este proceso de pasar el objeto o callback a ejecutar se lo 
-| suele llamar "subscribe", "attach", "listen".
-|
-| En resumen, para implementar Observer necesitamos:
-| - Un elemento que sea de interés cuando cambie o suceda (el
-    "sujeto").
-| - El sujeto debe ofrecer un mecanismo de suscripción para
-    "observers".
-| - El sujeto debe notificar a los observers cada vez que ocurra
-    un camname.
-| - Los observers deben proveer un objeto o callback para ejecutar.
-+---------------------------------------------------------------*/
-/**
- * Agrega un observer para ser notificado de los camnames en el
- * estado de autenticación.
- * Retorna una función para cancelar la suscripción.
- * 
- * @param {Function} callback
- * @returns {Function}
- */
+
+
 export function subscribeToAuthState(callback) {
     observers.push(callback);
 
@@ -158,34 +131,8 @@ export function subscribeToAuthState(callback) {
     return () => observers = observers.filter(obs => obs != callback);
 }
 
-/**
- * Notifica a un observer de los datos actuales de la autenticación.
- * 
- * @param {Function} callback 
- */
+
 function notify(callback) {
-    // Invocamos el callback y le pasamos una copia de los datos
-    // de la autenticación.
-    /*
-    Si:
-        userData = {
-            id: 'a',
-            email: 'b',
-        }
-
-    Entonces escribir:
-
-        const nuevoObjeto = {...userData}
-
-    Es igual a escribir:
-
-        const nuevoObjeto = {id: userData.id, email: userData.email}
-
-    Es decir, el "object spread operator" (operador de esparcimiento de objetos)
-    sirve para copiar todas las propiedades de un objeto en otro.
-    */
-
-    // console.log('Notificando a un observer...');
     callback({...userData});
 }
 
@@ -194,4 +141,14 @@ function notify(callback) {
  */
 function notifyAll() {
     observers.forEach(observer => notify(observer));
+}
+
+// Actualiza los datos de usuario autenticado.
+function updateUserData(newData) {
+    userData = {
+        ...userData,
+        ...newData,
+    }
+    localStorage.setItem('user', JSON.stringify(userData));
+    notifyAll();
 }
