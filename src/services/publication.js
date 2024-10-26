@@ -1,27 +1,57 @@
 import { addDoc, collection, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
-import {db} from './firebase'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, storage } from './firebase';
 
-export function saveCars({ user_id, email, marca, modelo, año, chasis, motor, combustible, kilometraje, patente, transmision, puertas, asientos, description, estado, precio }){
-    const carsRef = collection(db, 'cars');
+
+async function uploadImage(file, userId, carId) {
+  if (!file) return null;
+  const timestamp = Date.now(); // Generar un timestamp
+  const storageRef = ref(storage, `cars/${userId}/${carId}-car-${timestamp}.jpg`); 
+  await uploadBytes(storageRef, file);
+  const downloadURL = await getDownloadURL(storageRef);
+  return downloadURL;
+}
+
+
+
+
+export async function saveCars({ user_id, email, marca, modelo, año, chasis, motor, combustible, kilometraje, patente, transmision, puertas, asientos, description, direccion, precio, gadgets }, images) {
+  const carsRef = collection(db, 'cars');
+
+  try {
+    const photoURLs = [];
+    for (let i = 0; i < images.length; i++) {
+      const url = await uploadImage(images[i], user_id, i);
+      if (url) {
+        photoURLs.push(url);
+      }
+    }
+
     return addDoc(carsRef, {
-        user_id,
-        email,
-        marca,
-        modelo,
-        año,
-        chasis,
-        motor,
-        combustible,
-        kilometraje,
-        patente,
-        transmision,
-        puertas,
-        asientos,
-        description,
-        estado,
-        precio,
-        created_at: serverTimestamp(),
+      user_id,
+      email,
+      marca,
+      modelo,
+      año,
+      chasis,
+      motor,
+      combustible,
+      kilometraje,
+      patente,
+      transmision,
+      puertas,
+      asientos,
+      description,
+      direccion,
+      precio,
+      gadgets: gadgets || [],
+      images: photoURLs, 
+      created_at: serverTimestamp(),
     });
+  } catch (error) {
+    console.error('Error al guardar los datos del auto:', error);
+    throw error;
+  }
 }
 
 export function subscribeToNewPublication(callback){
@@ -46,8 +76,9 @@ export function subscribeToNewPublication(callback){
                 puertas: doc.data().puertas,
                 asientos: doc.data().asientos,
                 description: doc.data().description,
-                estado: doc.data().estado,
+                direccion: doc.data().direccion,
                 precio: doc.data().precio,
+                gadgets: doc.data().gadgets || []
             }
         });
         // Invocamos el callback que nos pasaron como parámetro y le mandamos los mensajes.

@@ -1,213 +1,313 @@
 <script>
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../services/firebase.js';
-import { subscribeToAuthState } from '../services/auth.js';
-import { subscribeToNewPublication } from '../services/publication.js';
+import {
+  collection,
+  doc,
+  getDoc,
+  query,
+  updateDoc,
+  where,
+  getDocs,
+} from "firebase/firestore";
+import { db } from "../services/firebase.js";
+import { subscribeToAuthState } from "../services/auth.js";
+import { subscribeToNewPublication } from "../services/publication.js";
+import ModalRent from "../components/ModalRent.vue";
 
-import Heading from '../components/Heading.vue';
-import Comments from '../components/Comments.vue';
-import Transmition from '../icons/Transmition.vue';
-import Chasis from '../icons/Chasis.vue';
-import Engine from '../icons/Engine.vue';
-import GasStation from '../icons/GasStation.vue';
-import Accelerometer from '../icons/Accelerometer.vue';
-import Check from '../icons/Check.vue';
-import Cross from '../icons/Cross.vue';
+import Heading from "../components/Heading.vue";
+import Comment from "../components/Comment.vue";
+import Transmition from "../icons/Transmition.vue";
+import Chasis from "../icons/Chasis.vue";
+import Engine from "../icons/Engine.vue";
+import GasStation from "../icons/GasStation.vue";
+import Accelerometer from "../icons/Accelerometer.vue";
+import Check from "../icons/Check.vue";
+import Cross from "../icons/Cross.vue";
 
 // let unsubscribeAuth = () => {};
 
 export default {
-    props: ['id'],
-    name: 'CarDetails',
-    components: { Heading, Comments, Transmition, Chasis, Engine, GasStation, Accelerometer, Check, Cross },
-    data() {
+  props: ["id"],
+  name: "CarDetails",
+  components: {
+    Heading,
+    Comment,
+    Transmition,
+    Chasis,
+    Engine,
+    GasStation,
+    Accelerometer,
+    Check,
+    Cross,
+    ModalRent,
+  },
+  data() {
     return {
+      rented: false,
       car: null,
-      
       loading: false,
-      errorMsg: ''
+      errorMsg: "",
+      loggedUser: {
+        id: null,
+        email: null,
+      },
     };
   },
   async created() {
-    this.errorMsg = '';
-    try{
+    this.errorMsg = "";
+    try {
       this.loading = true;
       // console.log('ID del auto:', this.id);
-    const carId = this.id;
-    const carDoc = doc(db, 'cars', carId); 
-      const carSnapshot = await getDoc(carDoc); 
+      const carId = this.id;
+      const carDoc = doc(db, "cars", carId);
+      const carSnapshot = await getDoc(carDoc);
       if (carSnapshot.exists()) {
-        // console.log('Documento encontrado:'), 
-        this.car = carSnapshot.data(); 
+        // console.log('Documento encontrado:'),
+        this.car = carSnapshot.data();
         this.car.id = carSnapshot.id;
+        this.car.rented = this.car.rented || false;
+
+        await this.checkIfRented();
       }
-    }catch(error){
-      this.errorMsg = 'Hubo un error al obtener los detalles del auto. Volvé a intentar';
+    } catch (error) {
+      this.errorMsg =
+        "Hubo un error al obtener los detalles del auto. Volvé a intentar";
     }
     this.loading = false;
-    
   },
-  mounted() {
-  subscribeToAuthState(newUserData => {
-    this.loggedUser = newUserData;
+  methods: {
+    async checkIfRented() {
+      console.log("Valor de car:", this.car);
 
-  });
-
-  subscribeToNewPublication((newCars) => {
-    this.cars = newCars;
-  });
-  },
-  methods:  {
-    async rentCar(){
-      if (!this.car) return;
-      // console.log('usuario: ', this.$store.state.user.id)
+      if (!this.car || !this.car.id) {
+        console.log("Verificamos id");
+        return;
+      }
 
       try {
-        const carRef = doc(db, 'cars', this.car.id);
-        await updateDoc(carRef, {
-          rented: true,
-          rented_by: this.loggedUser.id
-        })
-        this.car.rented = true;
-        alert('Has alquilado el auto exitosamente');
+        // Consulta para buscar en la colección 'rental_requests' donde 'car_id' coincida con el ID del auto actual
+        const rentalQuery = query(
+          collection(db, "rental_requests"),
+          where("car_id", "==", this.car.id)
+        );
+
+        const querySnapshot = await getDocs(rentalQuery);
+
+        if (!querySnapshot.empty) {
+          // Si hay resultados toma el primero
+          const rentalData = querySnapshot.docs[0].data();
+          // Establece el estado de alquilado
+          this.rented = rentalData.rented;
+          console.log("Auto alquilado:", this.rented);
+        } else {
+          console.log("Este auto no está alquilado.");
+
+          this.rented = false;
+        }
       } catch (error) {
-        console.error('Error al alquilar el auto:', error);
-        this.errorMsg = 'No se pudo completar el alquiler.';
+        console.error("Error al verificar si el auto está alquilado:", error);
       }
-    }
-  }
+    },
 
-}
+    openModal() {
+      this.$refs.ModalRent.open();
+    },
+  },
+  mounted() {
+    subscribeToAuthState((newUserData) => {
+      this.loggedUser = newUserData;
+    });
 
+    subscribeToNewPublication((newCars) => {
+      this.cars = newCars;
+    });
 
+    this.checkIfRented(); // Verifica el estado de alquiler al cargar el componente
+  },
+};
 </script>
 
 <template>
-  <div v-if="loading" class="flex items-center justify-center w-fit mx-auto bg-gray-50">
+  <div
+    v-if="loading"
+    class="flex items-center justify-center w-fit mx-auto bg-gray-50"
+  >
     <div role="status">
-        <svg aria-hidden="true" class="w-8 h-8 text-gray-200 animate-spin fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/><path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/></svg>
-        <span class="sr-only">Cargando...</span>
+      <svg
+        aria-hidden="true"
+        class="w-8 h-8 text-gray-200 animate-spin fill-blue-600"
+        viewBox="0 0 100 101"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+          fill="currentColor"
+        />
+        <path
+          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+          fill="currentFill"
+        />
+      </svg>
+      <span class="sr-only">Cargando...</span>
     </div>
   </div>
-<div v-if="car">
-  <section class="py-8 bg-white md:py-16 antialiased">
-    <div class="max-w-screen-xl px-4 mx-auto 2xl:px-0">
-      <div class="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
+  <div v-if="car">
+    <section class="py-8 bg-white md:py-16 antialiased">
+      <div class="max-w-screen-xl px-4 mx-auto 2xl:px-0">
+        <div class="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
+          <div class="shrink-0 max-w-md lg:max-w-lg mx-auto">
+            <img class="w-full" src="../assets/Car-Img.png" alt="" />
+          </div>
 
-        <div class="shrink-0 max-w-md lg:max-w-lg mx-auto">
-          <img class="w-full" src="/public/Car-Img.png" alt="" />
-        </div>
+          <div class="mt-6 sm:mt-8 lg:mt-0">
+            <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">
+              {{ car.marca }} {{ car.modelo }}, {{ car.año }}
+            </h1>
+            <div class="mt-4 sm:items-center sm:gap-4 sm:flex">
+              <p class="text-2xl font-bold text-gray-900 sm:text-3xl">
+                ${{ car.precio }} /día
+              </p>
+            </div>
 
-        <div class="mt-6 sm:mt-8 lg:mt-0">
-          <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">
-            {{ car.marca }} {{ car.modelo }}, {{ car.año }}
-          </h1>
-          <div class="mt-4 sm:items-center sm:gap-4 sm:flex">
-            <p class="text-2xl font-bold text-gray-900 sm:text-3xl">
-              ${{ car.precio }} /día
+            <div class="flex items-center gap-4 mt-4">
+              <!-- <div v-if="car.estado == 'Bueno' || car.estado == 'Excelente'">
+                <span
+                  class="flex items-center gap-2 w-fit bg-blue-100 py-1 px-2 rounded-full"
+                >
+                  <Check />
+                  <p class="text-sm font-medium text-blue-800">
+                    <strong class="hidden md:inline">Estado:</strong>
+                    {{ car.estado }}
+                  </p>
+                </span>
+              </div>
+
+              <div v-else>
+                <span
+                  class="flex items-center gap-2 w-fit bg-red-100 py-1 px-2 rounded-full"
+                >
+                  <Cross />
+                  <p class="text-sm font-medium text-red-800">
+                    <strong class="hidden md:inline">Estado:</strong>
+                    {{ car.estado }}
+                  </p>
+                </span>
+              </div> -->
+
+              <div v-for="(gadget, index) in car.gadgets" :key="index">
+                <p>{{ gadget }}</p>
+              </div>
+
+              <span
+                class="flex items-center gap-2 w-fit bg-green-100 py-1 px-2 rounded-full"
+              >
+                <Accelerometer />
+                <p class="text-sm font-medium text-green-800">
+                  <strong class="hidden md:inline">Kilometraje:</strong>
+                  {{ car.kilometraje }} km
+                </p>
+              </span>
+            </div>
+
+            <hr class="my-6 md:my-8 border-gray-200" />
+
+            <p class="mb-6 text-gray-500">
+              {{ car.description }}
             </p>
+
+            <ul class="flex flex-wrap gap-2 text-gray-600 my-5">
+              <li
+                class="flex items-center gap-2 w-fit bg-gray-200 py-2 px-4 rounded-full"
+              >
+                <Engine />
+                <p class="text-md font-medium text-gray-500">
+                  <strong class="hidden md:inline">Motor:</strong>
+                  {{ car.motor }}
+                </p>
+              </li>
+
+              <li
+                class="flex items-center gap-2 w-fit bg-gray-200 py-2 px-4 rounded-full"
+              >
+                <Chasis />
+                <p class="text-md font-medium text-gray-500">
+                  <strong class="hidden md:inline">Chasis:</strong>
+                  {{ car.chasis }}
+                </p>
+              </li>
+
+              <li
+                class="flex items-center gap-2 w-fit bg-gray-200 py-2 px-4 rounded-full"
+              >
+                <Transmition />
+                <p class="text-md font-medium text-gray-500">
+                  <strong class="hidden md:inline">Transmisión:</strong>
+                  {{ car.transmision }}
+                </p>
+              </li>
+
+              <li
+                class="flex items-center gap-2 w-fit bg-gray-200 py-2 px-4 rounded-full"
+              >
+                <GasStation />
+                <p class="text-md font-medium text-gray-500">
+                  <strong class="hidden md:inline">Combustible:</strong>
+                  {{ car.combustible }}
+                </p>
+              </li>
+            </ul>
+
+            <!-- boton para alquilar un vehiculo -->
+
+            <button
+              type="button"
+              class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              v-if="!rented && car.user_id !== loggedUser?.id"
+              @click="openModal"
+            >
+              <span class="hidden md:block">Alquilar</span>
+              <svg
+                class="rtl:rotate-180 w-3.5 h-3.5 ms-2"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 14 10"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M1 5h12m0 0L9 1m4 4L9 9"
+                />
+              </svg>
+            </button>
+
+            <!-- <ModalAlquilar ref="modalAlquilar" /> -->
+            <ModalRent
+              ref="ModalRent"
+              :car="car"
+              :loggedUser="loggedUser"
+              :rented="car.rented"
+            />
+
+            <span
+              v-if="rented && car.user_id !== loggedUser?.id"
+              class="bg-red-100 text-red-800 text-base font-medium me-2 px-2.5 py-0.5 rounded border border-red-400"
+              >Este auto ya esta alquilado</span
+            >
+            <span
+              v-if="rented && car.user_id == loggedUser?.id"
+              class="bg-red-100 text-red-800 text-base font-medium me-2 px-2.5 py-0.5 rounded border border-red-400"
+              >Tu auto ya esta alquilado</span
+            >
           </div>
-
-          <!--  -->
-
-          <div class="flex items-center gap-4 mt-4">
-            <div v-if="car.estado == 'Bueno' || car.estado == 'Excelente'">
-              <span class="flex items-center gap-2 w-fit bg-blue-100 py-1 px-2 rounded-full">
-              <Check/>
-              <p class="text-sm font-medium text-blue-800">
-                <strong class="hidden md:inline">Estado:</strong>
-                {{ car.estado }}
-              </p>
-            </span>
-            </div>
-
-            <div v-else>
-              <span class="flex items-center gap-2 w-fit bg-red-100 py-1 px-2 rounded-full">
-              <Cross />
-              <p class="text-sm font-medium text-red-800">
-                <strong class="hidden md:inline">Estado:</strong>
-                {{ car.estado }}
-              </p>
-            </span>
-            </div>
-
-            <span class="flex items-center gap-2 w-fit bg-green-100 py-1 px-2 rounded-full">
-              <Accelerometer/>
-              <p class="text-sm font-medium text-green-800">
-                <strong class="hidden md:inline">Kilometraje:</strong>
-                {{ car.kilometraje }} km
-              </p>
-            </span>
-          </div>
-
-          <hr class="my-6 md:my-8 border-gray-200 " />
-
-          <p class="mb-6 text-gray-500">
-            {{ car.description }}
-          </p>
-
-          <ul class="flex flex-wrap gap-2 text-gray-600 my-5">
-            <li class="flex items-center gap-2 w-fit bg-gray-200 py-2 px-4 rounded-full">
-              <Engine/>
-              <p class="text-md font-medium text-gray-500 ">
-                <strong class="hidden md:inline">Motor:</strong>
-                {{ car.motor }}
-              </p>
-            </li>
-
-            <li class="flex items-center gap-2 w-fit bg-gray-200 py-2 px-4 rounded-full">
-              <Chasis/>
-              <p class="text-md font-medium text-gray-500 ">
-                <strong class="hidden md:inline">Chasis:</strong>
-                {{ car.chasis }}
-              </p>
-            </li>
-
-            <li class="flex items-center gap-2 w-fit bg-gray-200 py-2 px-4 rounded-full">
-              <Transmition/>
-              <p class="text-md font-medium text-gray-500 ">
-                <strong class="hidden md:inline">Transmisión:</strong>
-                {{ car.transmision }}
-              </p>
-            </li> 
-
-            <li class="flex items-center gap-2 w-fit bg-gray-200 py-2 px-4 rounded-full">
-              <GasStation/>
-              <p class="text-md font-medium text-gray-500 ">
-                <strong class="hidden md:inline">Combustible:</strong>
-                {{ car.combustible }}
-              </p>
-            </li> 
-          </ul>
-
-          <!-- boton para alquilar un vehiculo -->
-
-          <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          v-if="!car.rented"
-          @click="rentCar"
-          >
-          <span class="hidden md:block">Alquilar</span>
-            <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
-            </svg>
-          </button>
-          <span v-if="car.rented" class="bg-red-100 text-red-800 text-base font-medium me-2 px-2.5 py-0.5 rounded border border-red-400">Este auto ya esta alquilado</span>
-
         </div>
       </div>
-    </div>
-    <Comments :carId="car.id" />
-  </section>
-</div>
-<div v-else>
-  <p class="text-center">Cargando...</p>
-</div>
-
-
-
-
+      <Comment :carId="car.id" />
+    </section>
+  </div>
+  <div v-else>
+    <p class="text-center">Cargando...</p>
+  </div>
 </template>
-
-
-
-

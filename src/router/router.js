@@ -1,51 +1,51 @@
-import { createRouter, createWebHashHistory } from 'vue-router';
-import Home from '../pages/Home.vue';
-import Login from '../pages/Login.vue';
-import Profile from '../pages/Profile.vue';
-import ProfileEdit from '../pages/ProfileEdit.vue';
-import Register from '../pages/Register.vue';
-import Publications from '../pages/Publications.vue';
-import Publish from '../pages/Publish.vue';
-import CarDetails from '../pages/CarDetails.vue';
+import { createRouter, createWebHashHistory } from "vue-router";
+import Home from "../pages/Home.vue";
+import Login from "../pages/Login.vue";
+import Profile from "../pages/Profile.vue";
+import ProfileEdit from "../pages/ProfileEdit.vue";
+import Register from "../pages/Register.vue";
+import Publications from "../pages/Publications.vue";
+import Publish from "../pages/Publish.vue";
+import CarDetails from "../pages/CarDetails.vue";
 
 import { subscribeToAuthState } from "../services/auth";
 
 const routes = [
-    { path: '/', component: Home },
-    { path: '/Login', component: Login },
-    { path: '/Profile', component: Profile, meta: { needsAuth:true } },
-    { path: '/Register', component: Register},
-    { path: '/Publications', component: Publications},
-    { path: '/Publish', component: Publish, meta: { needsAuth:true }},
-    { path: '/Profile/Edit', component: ProfileEdit, meta: { needsAuth:true }},
-    { path: '/CarDetails/:id', name: 'CarDetails', component: CarDetails, props: true, meta: { requiresAuth: true } }, // Agregué 'name'
+  { path: "/", component: Home },
+  { path: "/Login", component: Login },
+  { path: "/Profile", component: Profile, meta: { needsAuth: true } },
+  { path: "/Register", component: Register },
+  { path: "/Publications", component: Publications },
+  { path: "/Publish", component: Publish, meta: { needsAuth: true } },
+  { path: "/Profile/Edit", component: ProfileEdit, meta: { needsAuth: true }, props: { showEditModal: true }  },
+  { path: "/CarDetails/:id", name: "CarDetails", component: CarDetails, props: true, meta: { requiresAuth: true } }, // Agregué 'name'
 ];
 
 // Creamos el router usando las rutas que definimos y definiendo el modo
 // de "historia".
 const router = createRouter({
-    routes,
-    // routes: routes,
-    history: createWebHashHistory(),
+  routes,
+  // routes: routes,
+  history: createWebHashHistory(),
 });
 
 let loggedUser = {
-    id: null,
-    email: null,
-    userName: null,
-    name: null,
-    lastName: null,
-}
+  id: null,
+  email: null,
+  userName: null,
+  name: null,
+  lastName: null,
+};
 
 //Agrega un observer para ser notificado de los cambios en el estado de autenticación. Retorna una función para cancelar la suscripción.
-subscribeToAuthState(newUserData => loggedUser = newUserData);
+subscribeToAuthState((newUserData) => (loggedUser = newUserData));
 
-router.beforeEach((to, from) => {
-    if (to.meta.needsAuth && loggedUser.id == null) {
-        return{
-            path:"/Login",
-        }
-    }
+router.beforeEach((to) => {
+  if (to.meta.needsAuth && loggedUser.id == null) {
+    return {
+      path: "/Login",
+    };
+  }
 });
 
 export default router;

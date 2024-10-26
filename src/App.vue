@@ -1,20 +1,20 @@
 <script>
-import { logout, subscribeToAuthState } from './services/auth';
+import { logout, subscribeToAuthState } from "./services/auth";
 
-import Navbar from './components/Navbar.vue'
-import Footer from './components/Footer.vue'
+import Navbar from "./components/Navbar.vue";
+import FooterLayout from "./components/Footer.vue";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
     Navbar,
-    Footer
+    FooterLayout,
   },
-  data(){
+  data() {
     return {
       loggedUser: {
-        id:null,
-        email:null,
+        id: null,
+        email: null,
         photoURL: null,
         userName: null,
         name: null,
@@ -23,28 +23,27 @@ export default {
     };
   },
   methods: {
-    handleLogout(){
+    handleLogout() {
       logout();
       this.loggedUser = {
-        id:null,
-        email:null
+        id: null,
+        email: null,
       };
-      this.$router.push('/Login');
+      this.$router.push("/Login");
     },
   },
-  mounted(){
-    subscribeToAuthState(newUserData => this.loggedUser = newUserData);
-  }
-}
-
+  mounted() {
+    subscribeToAuthState((newUserData) => (this.loggedUser = newUserData));
+  },
+};
 </script>
 
 <template>
   <Navbar :user="loggedUser" @logout="handleLogout" />
-  
+
   <main class="flex flex-col min-h-screen pt-20 mx-auto">
-      <router-view />
+    <router-view />
   </main>
 
-  <Footer/>
+  <FooterLayout />
 </template>

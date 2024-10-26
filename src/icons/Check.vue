@@ -1,11 +1,12 @@
 <script>
 export default {
-  name: 'CheckIcon'
-}
+  name: "CheckIcon",
+};
 </script>
 
 <template>
-<svg xmlns="http://www.w3.org/2000/svg"
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
     class="icon icon-tabler icon-tabler-check"
     width="16"
     height="16"
@@ -14,13 +15,9 @@ export default {
     stroke="#111"
     fill="none"
     stroke-linecap="round"
-    stroke-linejoin="round">
-    <path stroke="none"
-        d="M0 0h24v24H0z"
-        fill="none"/>
-    <path d="M5 12l5 5l10 -10"/>
+    stroke-linejoin="round"
+  >
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M5 12l5 5l10 -10" />
   </svg>
 </template>
-
-
-

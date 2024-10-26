@@ -1,84 +1,93 @@
 <script>
 import Heading from '../components/Heading.vue';
-import router from '../router/router';
 import { editMyProfile, subscribeToAuthState } from '../services/auth';
 
 import AddImg from '../icons/addImg.vue';
+import EditPhotoModal from '../components/EditPhotoModal.vue';
 
 let unsubscribeAuth = () => {};
 
 export default{
-    name: 'ProfileEdit',
-    components: { Heading, AddImg },
-    data() {
-      return {
-        editData: {
-          userName: null,
-          name: null,
-          lastName: null,
-          photo: null,
-          photoPreview: null,
-          photoURL: null
-        },
-        errorMessage: '',
-        editing: false
-      };
-    },
-    methods: {
-      async handleSubmit() {
-        this.errorMessage = '';
-        if (!this.editData.userName || !this.editData.name || !this.editData.lastName) {
-          this.errorMessage = 'Por favor completa todos los campos';
-          return;
-        }
-
-        if (!this.editData.photo && !this.editData.photoURL) {
-          this.errorMessage = 'Por favor selecciona una foto de perfil.';
-          return;
-        }
-
-        if (!this.editData.photo) {
-           this.editData.photo = this.editData.photoPreview;
-        }
-
-
-        this.editing = true;
-
-        try {
-          
-          await editMyProfile({...this.editData});
-          console.log("Perfil editado con éxito")
-        } catch(error) {
-          console.error(error);
-        } finally {
-          this.editing = false;
-          this.$router.push('/Profile');
-        }
+  name: 'ProfileEdit',
+  components: { Heading, AddImg, EditPhotoModal },
+  data() {
+    return {
+      editData: {
+        userName: null,
+        name: null,
+        lastName: null,
+        photo: null,
+        photoPreview: null,
+        photoURL: '',
       },
-      // Previsualizar y guardar el archivo seleccionado
-      handleFileSelection(ev) {
-        this.editData.photo = ev.target.files[0];
-        const reader = new FileReader();
-        reader.addEventListener('load', () => {
-          this.editData.photoPreview = reader.result;
-        });
-        reader.readAsDataURL(this.editData.photo);
+      errorMessage: '',
+      editing: false
+    };
+  },
+  methods: {
+    async handleSubmit() {
+      if (this.editing) return;
 
+      if(!this.editData.userName || !this.editData.name || !this.editData.lastName) {
+        this.errorMessage = 'Por favor completa todos los campos.';
+        return;
+      }
+
+      // Sin esto la imagen se borra al editar el perfil al no cargar nueva imagen.
+/*       if(this.editData.photo == null) {
+        this.errorMessage = 'Por favor selecciona una imagen.';
+        return;
+      } */
+
+      this.editing = true;
+
+      try {
+        const updatedData = {
+          ...this.editData,
+          photo: this.editData.photo ? this.editData.photo : this.editData.photoURL
+        };
+
+        await editMyProfile(updatedData);
+        console.log("Perfil editado con éxito")
+        this.$router.push('/Profile');
+      } catch(error) {
+        console.error(error);
+      } finally {
+        this.editing = false;
       }
     },
-    mounted() {
-      unsubscribeAuth = subscribeToAuthState(userData => this.editData = {
-        userName: userData.userName || '',
-        name: userData.name || '',
-        lastName: userData.lastName || '',
-        photoURL: userData.photoURL || ''
-      });
+    // Previsualizar y guardar el archivo seleccionado
+    handleFileSelection(ev) {
+      const file = ev.target.files[0] || null;
+      if (file && file.type.startsWith('image/')) {
+        this.editData.photo = file;
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.editData.photoPreview = reader.result;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        this.errorMessage = 'Por favor selecciona una imagen válida.';
+      }
     },
-    unmounted() {
-      unsubscribeAuth();
+    openModal() {
+      this.$refs.EditPhotoModal.open(); 
     }
+  },
+  mounted() {
+    unsubscribeAuth = subscribeToAuthState(userData => this.editData = {
+      userName: userData.userName || '',
+      name: userData.name || '',
+      lastName: userData.lastName || '',
+      photoURL: userData.photoURL || '',
+      photoPreview: userData.photoURL || '',
+      photo: null,
+    });
+  },
+  unmounted() {
+    unsubscribeAuth();
+  }
 }
-
 </script>
 
 <template>
@@ -89,9 +98,9 @@ export default{
     </div>
   </div>
   <form 
-  action="#"
-  @submit.prevent="handleSubmit"
-  class="max-w-md w-96 m-auto" 
+    action="#"
+    @submit.prevent="handleSubmit"
+    class="max-w-md w-96 m-auto" 
   >
     <Heading>Editar mi Perfil</Heading>
     <div v-if="errorMessage" class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
@@ -99,46 +108,48 @@ export default{
     </div>
     <div class="relative">
       <figure class="flex items-center justify-center w-full mb-5">          
-          <img 
-            v-if="editData.photoPreview" 
-            :src="editData.photoPreview" 
-            alt="Foto de perfil" 
-            class="w-24 h-24 rounded-full"
-          />
-          <img 
-            v-else-if="editData.photoURL" 
-            :src="editData.photoURL" 
-            alt="Foto de perfil" 
-            class="w-24 h-24 rounded-full"
-          />
-          <img 
-            v-else 
-            src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" 
-            alt="Foto de perfil" 
-            class="w-24 h-24 rounded-full"
-          />
-
+        <img 
+          v-if="editData.photoPreview" 
+          :src="editData.photoPreview" 
+          alt="Perfil" 
+          class="w-24 h-24 rounded-full"
+        />
+        <img 
+          v-else-if="editData.photoURL" 
+          :src="editData.photoURL" 
+          alt="Perfil" 
+          class="w-24 h-24 rounded-full"
+        />
+        <img 
+          v-else 
+          src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" 
+          alt="Perfil" 
+          class="w-24 h-24 rounded-full"
+        />
       </figure>
       <div class="absolute inset-0 flex items-center justify-center">
         <label for="photo" class="w-24 w-24 aspect-square rounded-full flex items-center justify-center cursor-pointer">
-          <AddImg/>
           <span class="sr-only">Seleccionar foto</span>
       </label>
-      <input 
-        type="file" 
+      <button 
+        type="button" 
         id="photo" 
-        @change="handleFileSelection"
+        @click="openModal"
         class="hidden"
-        >
+        ></button>
       </div>
     </div>
+    <EditPhotoModal
+      ref="EditPhotoModal"
+      :editData="editData"
+    />
     <div class="relative z-0 w-full mb-5 group">
       <input
         id="userName"
         class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
         placeholder=" "
         v-model="editData.userName"
-      ></input>
+      >
       <label 
         for="userName"
         class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"

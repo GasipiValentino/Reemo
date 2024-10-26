@@ -10,23 +10,48 @@ export default {
   components: { Heading },
   data() {
     return {
+      loading: false,
       step: 1,
+      selectedFiles: [null, null, null, null],
+      photoPreview: ["", "", "", ""],
       cars: [],
+
+      availableGadgets: [
+        { id: 'bt', name: 'Bluetooth' },
+        { id: 'gps', name: 'GPS' },
+        { id: 'wifi', name: 'Wi-Fi' },
+        { id: 'revCam', name: 'Cámara de reversa' },
+        { id: 'parkSense', name: 'Sensores de estacionamiento' },
+        { id: 'cruiseCtrl', name: 'Control de crucero' },
+        { id: 'heatSeats', name: 'Asientos calefactables' },
+        { id: 'ac', name: 'Aire acondicionado' },
+        { id: 'sunroof', name: 'Techo solar' },
+        { id: 'touchScreen', name: 'Pantalla Táctil' },
+        { id: 'wirelessCharge', name: 'Carga inalámbrica' },
+        { id: 'soundSystem', name: 'Sistema de sonido' },
+        { id: 'abs', name: 'Frenos ABS' },
+        { id: 'airbag', name: 'Airbag' },
+        { id: 'laneAssist', name: 'Asistente de mantenimiento de carril' },
+        { id: 'blindSpot', name: 'Control de punto ciego' },
+        { id: 'tractionCtrl', name: 'Control de tracción' }
+      ],
+
       newCar: {
         marca: "",
         modelo: "",
         año: "",
+        patente: "",
+        description: "",
+        combustible: "",
+        direccion: "",
+        kilometraje: "",
+        precio: "",
         chasis: "",
         motor: "",
-        combustible: "",
-        kilometraje: "",
-        patente: "",
-        transmision: "",
-        puertas: "",
         asientos: "",
-        description: "",
-        estado: "",
-        precio: "",
+        puertas: "",
+        transmision: "",
+        gadgets: []
       },
       loggedUser: {
         id: null,
@@ -42,7 +67,7 @@ export default {
         año: false,
         patente: false,
         description: false,
-        estado: false,
+        direccion: false,
         combustible: false,
         kilometraje: false,
         precio: false,
@@ -50,7 +75,8 @@ export default {
         motor: false,
         asientos: false,
         puertas: false,
-        transmision: false
+        transmision: false,
+        gadgets: false
       }
     };
   },
@@ -108,13 +134,6 @@ export default {
       return !this.errors.marca && !this.errors.modelo && !this.errors.año && !this.errors.patente;
     },
 
-
-
-
-
-
-
-
     validateStep2() {
 
       if (!this.newCar.description) {
@@ -127,10 +146,18 @@ export default {
         this.errors.description = null;
       }
 
-      if (!this.newCar.estado) {
-        this.errors.estado = "El campo estado no puede estar vacío";
+      if (!this.newCar.direccion) {
+        this.errors.direccion = "El campo dirección no puede estar vacío";
+      } else if (this.newCar.direccion.length < 6) {
+        this.errors.direccion = "La dirección debe tener al menos 6 caracteres";
+      } else if (this.newCar.direccion.length > 200) {
+        this.errors.direccion = "La dirección no puede tener más de 200 caracteres";
+      } else if (!/^[\w\s.,#-]+$/.test(this.newCar.direccion)) {
+        this.errors.direccion = "La dirección contiene caracteres no permitidos";
+      } else if (!/\d/.test(this.newCar.direccion)) {
+        this.errors.direccion = "La dirección debe contener al menos un número";
       } else {
-        this.errors.estado = null;
+        this.errors.direccion = null; // Validación exitosa
       }
 
       if (!this.newCar.combustible) {
@@ -151,11 +178,8 @@ export default {
         this.errors.kilometraje = null;
       }
 
-      return !this.errors.description && !this.errors.estado && !this.errors.combustible && !this.errors.kilometraje && !this.errors.transmision;
+      return !this.errors.description && !this.errors.direccion && !this.errors.combustible && !this.errors.kilometraje && !this.errors.transmision;
     },
-
-
-
 
     validateStep3() {
       if (!this.newCar.chasis) {
@@ -194,12 +218,19 @@ export default {
         this.errors.asientos = null;
       }
 
+      // Se me ocurrió validarlo así pero no se si está bien, sino lo sacamos
+      if (this.newCar.gadgets.length == 0 ) {
+        this.errors.gadgets = "Selecciona al menos un gadget";
+      } else {
+        this.errors.gadgets = null;
+      }
+
       if (!this.newCar.precio) {
         this.errors.precio = "El campo precio no puede estar vacío";
       } else if (this.newCar.precio < 1000) {
         this.errors.precio = "El precio por hora no puede ser menor a $1000";
       } else if (this.newCar.precio > 15000) {
-        this.errors.precio = "La descripción no puede tener más de $15000";
+        this.errors.precio = "El precio por hora no puede ser mayor a $15000";
       } else if (isNaN(this.newCar.precio)) {
         this.errors.precio = "El campo precio debe ser un número";
       } 
@@ -207,31 +238,59 @@ export default {
         this.errors.precio = null;
       }
 
-      return !this.errors.chasis && !this.errors.motor && !this.errors.puertas && !this.errors.asientos && !this.errors.precio;
+      return !this.errors.chasis && !this.errors.motor && !this.errors.puertas && !this.errors.asientos && !this.errors.gadgets && !this.errors.precio;
+    },
+
+    validateStep4() {
+      if (this.selectedFiles.length < 4) {
+        this.errors.photos = "El auto no puede tener más de 7 asientos";
+        return false;
+      }
+      this.errors.photos = null;
+      return true;
     },
 
     nextStep() {
       // Hacemos la validación antes de pasar al siguiente paso
       if (this.step === 1 && !this.validateStep1()) return;
       if (this.step === 2 && !this.validateStep2()) return;
+      if (this.step === 3 && !this.validateStep3()) return;
       this.step += 1;
     },
     prevStep() {
       this.step -= 1;
     },
 
-    handleSubmit() {
+    handleFileSelection(index, event) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFiles.splice(index, 1, file); 
+      this.photoPreview.splice(index, 1, URL.createObjectURL(file));
+    }
+  },
+
+    async handleSubmit() {
 
       // Nos aseguramos la validación de todos los datos del formulario antes de que sea enviado - Es otra capa de verificación
       if (this.step === 1 && !this.validateStep1()) return;
       if (this.step === 2 && !this.validateStep2()) return;
       if (this.step === 3 && !this.validateStep3()) return;
+      if (this.step === 4 && !this.validateStep4()) return;
 
-      saveCars({
+      this.loading = true
+
+      try {
+      // Generar un ID único para la publicación (carId)
+      const carId = `${this.loggedUser.id}-${Date.now()}`;
+
+      // Llamar a la función saveCars y pasar las imágenes seleccionadas junto con el carId
+      await saveCars({
         user_id: this.loggedUser.id,
         email: this.loggedUser.email,
         ...this.newCar
-      });
+      }, this.selectedFiles, carId);
+
+      // Reiniciar el formulario después de guardar y las imágenes con sus respectivas previewsa
       this.newCar = {
         marca: "",
         modelo: "",
@@ -245,10 +304,18 @@ export default {
         puertas: "",
         asientos: "",
         description: "",
-        estado: "",
+        direccion: "",
         precio: "",
       };
+      this.selectedFiles = [null, null, null, null];
+      this.photoPreview = ["", "", "", ""]; 
+
       this.$router.push('/Profile');
+    } catch (error) {
+      console.error("Error al guardar los datos del auto:", error);
+    } finally {
+      this.loading = false;
+    }
     },
   },
   async mounted() {
@@ -328,18 +395,15 @@ export default {
       </div>
 
       <div class="relative w-full  group mb-10">
-        <label for="underline_select" class="sr-only">Estado</label>
-        <select id="underline_select" name="estado" v-model="newCar.estado"
-          class="block w-full py-2.5 px-0  text-gray-500 bg-transparent border-0 border-b-2 border-gray-300 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
-          <option class="p-4" value="" disabled selected>Estado</option>
-          <option class="p-4">Excelente</option>
-          <option class="p-4">Bueno</option>
-          <option class="p-4">Malo</option>
-          <option class="p-4">Muy malo</option>
-        </select>
-        <!-- Parrafo para mostrar el mensaje de error -->
-        <p v-if="errors.estado" class="text-red-500 text-xs italic mt-2">{{ errors.estado }}</p>
-        <label for="underline_select" class="sr-only">Underline select</label>
+        <input type="text" name="direccion" id="direccion"
+          class="block py-2.5 px-0 w-full  text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+          placeholder=" " v-model="newCar.direccion" />
+
+          <!-- Parrafo para mostrar el mensaje de error -->
+          <p v-if="errors.direccion" class="text-red-500 text-xs italic mt-2">{{ errors.direccion }}</p>
+
+        <label for="direccion"
+          class="peer-focus:font-medium absolute  text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Dirección</label>
       </div>
 
       <div class="relative w-full  group mb-10">
@@ -382,7 +446,7 @@ export default {
       </div>
 
       <button @click="prevStep" type="button"
-        class="text-white bg-violet-400 hover:bg-zinc-600  focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg  w-full sm:w-auto px-5 py-2.5 text-center">Anterior</button>
+        class="me-4 text-white bg-violet-400 hover:bg-zinc-600  focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg  w-full sm:w-auto px-5 py-2.5 text-center">Anterior</button>
       <button @click="nextStep" type="button"
         class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg  w-full sm:w-auto px-5 py-2.5 text-center">Siguiente</button>
 
@@ -390,8 +454,8 @@ export default {
     </section>
 
 
-
     <section v-if="step === 3">
+      <Heading>Paso 3</Heading>
       <div class="grid md:grid-cols-2 md:gap-6">
         <div class="relative w-full  group mb-10">
           <label for="underline_select" class="sr-only">Chasis</label>
@@ -468,18 +532,50 @@ export default {
           <p v-if="errors.precio" class="text-red-500 text-xs italic mt-2">{{ errors.precio }}</p>
       </div>
 
+      <div class="relative w-full group mb-10">
+        <h3 class="text-gray-700 font-semibold mb-2">Selecciona gadgets adicionales:</h3>
+        <div v-for="gadget in availableGadgets" :key="gadget.id" class="flex items-center mb-2">
+          <input 
+            type="checkbox" 
+            :id="gadget.id" 
+            :value="gadget.id" 
+            v-model="newCar.gadgets" />
+          <label :for="gadget" class="ml-2 text-gray-500">{{ gadget.name }}</label>
+        </div>
+        <p v-if="errors.gadgets" class="text-red-500 text-xs italic mt-2">{{ errors.gadgets }}</p>
+      </div>
+
       <button @click="prevStep" type="button"
-        class="text-white bg-violet-400 hover:bg-zinc-600  focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg  w-full sm:w-auto px-5 py-2.5 text-center">Anterior</button>
-      <button type="submit"
-        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg  w-full sm:w-auto px-5 py-2.5 text-center">
-        Finalizar
-      </button>
+        class="me-4 text-white bg-violet-400 hover:bg-zinc-600  focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg  w-full sm:w-auto px-5 py-2.5 text-center">Anterior</button>
+      <button @click="nextStep" type="button"
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg  w-full sm:w-auto px-5 py-2.5 text-center">Siguiente</button>
 
     </section>
 
 
-
-
-
+    <section v-if="step === 4">
+      <Heading>Paso 4</Heading>
+    
+      <div class="mb-4">
+        <input type="file" @change="handleFileSelection(0, $event)" />
+        <input type="file" @change="handleFileSelection(1, $event)" />
+        <input type="file" @change="handleFileSelection(2, $event)" />
+        <input type="file" @change="handleFileSelection(3, $event)" />
+        <p v-if="errors.photos" class="text-red-500 text-xs italic mt-2">{{ errors.photos }}</p>
+      </div>
+    
+      <!-- Vista previa de imágenes seleccionadas -->
+      <div class="flex flex-wrap mx-auto justify-center items-center gap-8">
+        <div v-for="(photo, index) in photoPreview" :key="index">
+          <img :src="photo" alt="Vista previa" class="max-w-[200px]" />
+        </div>
+      </div>
+    
+      <button @click="prevStep" type="button" class="me-4 text-white bg-violet-400 hover:bg-zinc-600 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg w-full sm:w-auto px-5 py-2.5 text-center">Anterior</button>
+      <button type="submit"  :disabled="loading"  :class="{'bg-gray-400 cursor-not-allowed': loading, 'bg-blue-700 hover:bg-blue-800': !loading}" class="text-white font-medium rounded-lg w-full sm:w-auto px-5 py-2.5 text-center"
+>
+  {{ loading ? "Cargando..." : "Finalizar" }}
+</button>  
+    </section>
   </form>
 </template>
