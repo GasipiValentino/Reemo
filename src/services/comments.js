@@ -9,7 +9,9 @@ import {
 import { db } from "./firebase";
 
 export function saveComment({ car_id, user_id, user_email, user_Name, text }) {
-  const commentRef = collection(db, "comments");
+  // const commentRef = collection(db, "comments");
+  const commentRef = collection(db, "cars", car_id, "comments"); 
+
 
   addDoc(commentRef, {
     car_id,
@@ -22,8 +24,11 @@ export function saveComment({ car_id, user_id, user_email, user_Name, text }) {
 }
 
 export function subscribeToComment(carId, callback) {
-  const commentRef = collection(db, "comments");
-  const q = query(commentRef, where("car_id", "==", carId));
+  // const commentRef = collection(db, "comments");
+  // const q = query(commentRef, where("car_id", "==", carId));
+
+  const commentRef = collection(db, "cars", carId, "comments"); 
+  const q = query(commentRef); 
 
   onSnapshot(q, (snapshot) => {
     const comments = snapshot.docs.map((doc) => ({
@@ -33,3 +38,5 @@ export function subscribeToComment(carId, callback) {
     callback(comments);
   });
 }
+
+

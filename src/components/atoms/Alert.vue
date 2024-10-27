@@ -5,54 +5,83 @@ import Warning from "../../icons/Warning.vue";
 import Error from "../../icons/Error.vue";
 
 export default {
-  name: 'Alert',
+  name: "Alert",
   components: { Success, Info, Warning, Error },
   props: {
     severity: {
       type: String,
       required: true,
-      validator: (value) => {
-        return ['success', 'info', 'warning', 'error'].includes(value);
-      },
+      validator: (value) => ["success", "info", "warning", "error"].includes(value),
     },
+    duration: {
+      type: Number,
+      default: 3000, // Duración en milisegundos antes de desaparecer
+    },
+  },
+  data() {
+    return {
+      isVisible: true,
+    };
   },
   computed: {
     IconComponent() {
       switch (this.severity) {
-        case 'success':
+        case "success":
           return Success;
-        case 'info':
+        case "info":
           return Info;
-        case 'warning':
+        case "warning":
           return Warning;
-        case 'error':
+        case "error":
           return Error;
         default:
           return null;
       }
     },
   },
+  mounted() {
+    setTimeout(() => {
+      this.isVisible = false; // Desactiva la alerta después del tiempo especificado
+    }, this.duration);
+  },
 };
 </script>
 
 <template>
-    <div :class="`alert alert-${severity}`" role="alert">
-      <span class="icon" v-if="IconComponent">
-        <component :is="IconComponent" />
-      </span>
-      <span class="message"><slot></slot></span>
+  <transition name="slide-fade">
+    <div v-if="isVisible" class="alert-container">
+      <div :class="`alert alert-${severity}`" role="alert">
+        <span class="icon" v-if="IconComponent">
+          <component :is="IconComponent" />
+        </span>
+        <span class="message"><slot /></span>
+      </div>
     </div>
+  </transition>
 </template>
 
 <style scoped>
+.alert-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%; /* Ocupa el ancho completo */
+  display: flex;
+  justify-content: center; /* Centra horizontalmente */
+  align-items: flex-end; /* Alinea en la parte inferior */
+  z-index: 1000;
+}
+
 .alert {
   padding: 1rem;
   border-radius: 0.5rem;
   margin-bottom: 1rem;
   display: flex;
   align-items: center;
+  transition: all 0.5s linear;
 }
 
+/* Estilos de severidad */
 .alert-success {
   background-color: #d4edda;
   color: #155724;
@@ -74,6 +103,21 @@ export default {
 }
 
 .icon {
-  margin-right: 0.5rem; /* Espacio entre el icono y el texto */
+  margin-right: 0.5rem;
+}
+
+/* Animación personalizada */
+.slide-fade-enter-active, .slide-fade-leave-active {
+  transition: all 0.5s linear;
+}
+
+.slide-fade-enter {
+  opacity: 0;
+  transform: translateY(100%);
+}
+
+.slide-fade-leave-to {
+  opacity: 0;
+  transform: translateY(100%);
 }
 </style>

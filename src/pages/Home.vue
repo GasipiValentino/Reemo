@@ -1,5 +1,5 @@
 <script>
-import Heading from "../components/Heading.vue";
+import Heading from "../components/atoms/Heading.vue";
 import Alert from '../components/atoms/Alert.vue';
 import Pill from '../components/atoms/Pill.vue';
 
@@ -11,11 +11,7 @@ export default {
 
 <template>
   <div>
-    <Pill accessory="wifi">Internet</Pill>
-    <Alert severity="success">Mira los alerts que me mandé.</Alert>
-    <Alert severity="info">El mas capito.</Alert>
-    <Alert severity="warning">Toy re loco.</Alert>
-    <Alert severity="error">Me voya dormir.</Alert>
+    <Alert severity="success">Bienvenido a Reemo!</Alert>
   </div>
     <section
     class="flex items-center mx-auto min-h-96 gap-x-8 flex-wrap max-w-5xl mt-6 px-4"
@@ -26,9 +22,9 @@ export default {
       </div>
     </div>
     <div class="mx-auto max-w-lg order-2 md:order-1 mb-6">
-      <h2 class="text-5xl mb-8 text-center lg:text-left">
+      <Heading :type="1" class="mb-8 text-center sm:text-5xl lg:text-left">
         Bienvenidos a <b>Reemo</b>!
-      </h2>
+      </Heading>
       <p class="text-center lg:text-left">
         Con Reemo tenés la posibilidad de ganar dinero alquilando tu propio
         auto, o también podes solicitar su tenencia por un tiempo específico por

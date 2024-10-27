@@ -1,6 +1,6 @@
 <script>
-import { subscribeToAuthState } from "../services/auth.js";
-import { saveComment, subscribeToComment } from "../services/comments.js";
+import { subscribeToAuthState } from "../../services/auth.js";
+import { saveComment, subscribeToComment } from "../../services/comments.js";
 
 let unsubscribeAuth = () => {};
 
@@ -12,6 +12,8 @@ export default {
       loggedUser: {
         id: null,
         email: null,
+        userName: null,
+        photoURL: null,
       },
       comments: [],
       newComment: {
@@ -35,6 +37,7 @@ export default {
           user_id: this.loggedUser.id,
           user_email: this.loggedUser.email,
           user_Name: this.loggedUser.userName,
+          user_photo: this.loggedUser.photoURL,
           text: this.newComment.text,
         });
         this.newComment.text = "";
@@ -96,7 +99,7 @@ export default {
             >
               <img
                 class="mr-2 w-6 h-6 rounded-full"
-                :src="`https://unavatar.io/${comment.user_Name}`"
+                :src="comment.user_photo"
                 alt=""
               />
               @{{ comment.user_Name }}

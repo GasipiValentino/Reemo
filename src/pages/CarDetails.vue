@@ -13,8 +13,8 @@ import { subscribeToAuthState } from "../services/auth.js";
 import { subscribeToNewPublication } from "../services/publication.js";
 import ModalRent from "../components/ModalRent.vue";
 
-import Heading from "../components/Heading.vue";
-import Comment from "../components/Comment.vue";
+import Heading from "../components/atoms/Heading.vue";
+import Comment from "../components/molecules/Comment.vue";
 import Transmition from "../icons/Transmition.vue";
 import Chasis from "../icons/Chasis.vue";
 import Engine from "../icons/Engine.vue";
@@ -22,6 +22,7 @@ import GasStation from "../icons/GasStation.vue";
 import Accelerometer from "../icons/Accelerometer.vue";
 import Check from "../icons/Check.vue";
 import Cross from "../icons/Cross.vue";
+import Pill from "../components/atoms/Pill.vue";
 
 // let unsubscribeAuth = () => {};
 
@@ -39,6 +40,7 @@ export default {
     Check,
     Cross,
     ModalRent,
+    Pill,
   },
   data() {
     return {
@@ -160,65 +162,40 @@ export default {
           </div>
 
           <div class="mt-6 sm:mt-8 lg:mt-0">
-            <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">
-              {{ car.marca }} {{ car.modelo }}, {{ car.año }}
-            </h1>
+            <Heading :type="1">{{ car.marca }} {{ car.modelo }}, {{ car.año }}</Heading>
             <div class="mt-4 sm:items-center sm:gap-4 sm:flex">
-              <p class="text-2xl font-bold text-gray-900 sm:text-3xl">
-                ${{ car.precio }} /día
-              </p>
-            </div>
-
-            <div class="flex items-center gap-4 mt-4">
-              <!-- <div v-if="car.estado == 'Bueno' || car.estado == 'Excelente'">
-                <span
-                  class="flex items-center gap-2 w-fit bg-blue-100 py-1 px-2 rounded-full"
-                >
-                  <Check />
-                  <p class="text-sm font-medium text-blue-800">
-                    <strong class="hidden md:inline">Estado:</strong>
-                    {{ car.estado }}
-                  </p>
-                </span>
-              </div>
-
-              <div v-else>
-                <span
-                  class="flex items-center gap-2 w-fit bg-red-100 py-1 px-2 rounded-full"
-                >
-                  <Cross />
-                  <p class="text-sm font-medium text-red-800">
-                    <strong class="hidden md:inline">Estado:</strong>
-                    {{ car.estado }}
-                  </p>
-                </span>
-              </div> -->
-
-              <div v-for="(gadget, index) in car.gadgets" :key="index">
-                <p>{{ gadget }}</p>
-              </div>
-
-              <span
-                class="flex items-center gap-2 w-fit bg-green-100 py-1 px-2 rounded-full"
+              <Heading :type="2">${{ car.precio }} /día</Heading>
+              <button
+                type="button"
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm mb-3 px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                v-if="!rented && car.user_id !== loggedUser?.id"
+                @click="openModal"
               >
-                <Accelerometer />
-                <p class="text-sm font-medium text-green-800">
-                  <strong class="hidden md:inline">Kilometraje:</strong>
-                  {{ car.kilometraje }} km
-                </p>
-              </span>
+                <span class="hidden md:block">Alquilar</span>
+                <svg
+                  class="rtl:rotate-180 w-3.5 h-3.5 ms-2"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 14 10"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M1 5h12m0 0L9 1m4 4L9 9"
+                  />
+                </svg>
+              </button>
             </div>
 
-            <hr class="my-6 md:my-8 border-gray-200" />
-
-            <p class="mb-6 text-gray-500">
+            <p class="mb-3 text-gray-500 break-words">
               {{ car.description }}
             </p>
 
-            <ul class="flex flex-wrap gap-2 text-gray-600 my-5">
-              <li
-                class="flex items-center gap-2 w-fit bg-gray-200 py-2 px-4 rounded-full"
-              >
+            <ul class="flex flex-col gap-2 text-gray-600 my-5">
+              <li class="flex items-center gap-2 w-fit py-1.5 rounded-full">
                 <Engine />
                 <p class="text-md font-medium text-gray-500">
                   <strong class="hidden md:inline">Motor:</strong>
@@ -226,9 +203,7 @@ export default {
                 </p>
               </li>
 
-              <li
-                class="flex items-center gap-2 w-fit bg-gray-200 py-2 px-4 rounded-full"
-              >
+              <li class="flex items-center gap-2 w-fit py-1.5 rounded-full">
                 <Chasis />
                 <p class="text-md font-medium text-gray-500">
                   <strong class="hidden md:inline">Chasis:</strong>
@@ -236,9 +211,7 @@ export default {
                 </p>
               </li>
 
-              <li
-                class="flex items-center gap-2 w-fit bg-gray-200 py-2 px-4 rounded-full"
-              >
+              <li class="flex items-center gap-2 w-fit py-1.5 rounded-full">
                 <Transmition />
                 <p class="text-md font-medium text-gray-500">
                   <strong class="hidden md:inline">Transmisión:</strong>
@@ -246,9 +219,7 @@ export default {
                 </p>
               </li>
 
-              <li
-                class="flex items-center gap-2 w-fit bg-gray-200 py-2 px-4 rounded-full"
-              >
+              <li class="flex items-center gap-2 w-fit py-1.5 rounded-full">
                 <GasStation />
                 <p class="text-md font-medium text-gray-500">
                   <strong class="hidden md:inline">Combustible:</strong>
@@ -257,31 +228,16 @@ export default {
               </li>
             </ul>
 
-            <!-- boton para alquilar un vehiculo -->
+            <hr class="my-3 md:my-4 border-gray-200" />
+            <Heading :type="2">Accesorios</Heading>
+            <div class="flex flex-wrap gap-2 text-gray-800">
+              <div v-for="(accessory, index) in car.accessories" :key="index">
+                <Pill :accessory="accessory.id" :name="accessory.name"/>
+              </div>
+            </div>
 
-            <button
-              type="button"
-              class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              v-if="!rented && car.user_id !== loggedUser?.id"
-              @click="openModal"
-            >
-              <span class="hidden md:block">Alquilar</span>
-              <svg
-                class="rtl:rotate-180 w-3.5 h-3.5 ms-2"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 14 10"
-              >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M1 5h12m0 0L9 1m4 4L9 9"
-                />
-              </svg>
-            </button>
+
+            <!-- boton para alquilar un vehiculo -->
 
             <!-- <ModalAlquilar ref="modalAlquilar" /> -->
             <ModalRent
@@ -304,7 +260,7 @@ export default {
           </div>
         </div>
       </div>
-      <Comment :carId="car.id" />
+      <Comment :carId="car.id"/>
     </section>
   </div>
   <div v-else>

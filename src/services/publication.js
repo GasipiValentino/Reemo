@@ -2,7 +2,6 @@ import { addDoc, collection, onSnapshot, orderBy, query, serverTimestamp } from 
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from './firebase';
 
-
 async function uploadImage(file, userId, carId) {
   if (!file) return null;
   const timestamp = Date.now(); // Generar un timestamp
@@ -12,10 +11,7 @@ async function uploadImage(file, userId, carId) {
   return downloadURL;
 }
 
-
-
-
-export async function saveCars({ user_id, email, marca, modelo, año, chasis, motor, combustible, kilometraje, patente, transmision, puertas, asientos, description, direccion, precio, gadgets }, images) {
+export async function saveCars({ user_id, email, marca, modelo, año, chasis, motor, combustible, kilometraje, patente, transmision, puertas, asientos, description, direccion, precio, accessories }, images) {
   const carsRef = collection(db, 'cars');
 
   try {
@@ -44,7 +40,7 @@ export async function saveCars({ user_id, email, marca, modelo, año, chasis, mo
       description,
       direccion,
       precio,
-      gadgets: gadgets || [],
+      accessories: accessories || [],
       images: photoURLs, 
       created_at: serverTimestamp(),
     });
@@ -78,7 +74,7 @@ export function subscribeToNewPublication(callback){
                 description: doc.data().description,
                 direccion: doc.data().direccion,
                 precio: doc.data().precio,
-                gadgets: doc.data().gadgets || []
+                accessories: doc.data().accessories || []
             }
         });
         // Invocamos el callback que nos pasaron como parámetro y le mandamos los mensajes.

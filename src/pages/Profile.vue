@@ -3,7 +3,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "../services/firebase.js";
 import { subscribeToAuthState } from "../services/auth.js";
 
-import Heading from "../components/Heading.vue";
+import Heading from "../components/atoms/Heading.vue";
 import CardCar from "../components/CardCar.vue";
 import User from "../components/User.vue";
 import RentedCar from "../components/RentedCar.vue";
@@ -73,7 +73,7 @@ export default {
 
 <template>
   <div class="flex flex-col justify-center items-center mb-4">
-    <Heading>Perfil</Heading>
+    <Heading :type="1">Perfil</Heading>
     <p class="text-sm text-gray-500 truncate">
       {{ loggedUser.email }}
     </p>
@@ -81,7 +81,7 @@ export default {
 
   <User :user="loggedUser" />
   <div class="p-4 max-w-md mx-auto md:max-w-screen-xl">
-    <h2 class="text-2xl font-bold">Mis Autos</h2>
+    <Heading :type="2">Mis autos</Heading>
   </div>
 
   <div

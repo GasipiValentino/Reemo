@@ -1,6 +1,6 @@
 <script>
-import Heading from "../components/Heading.vue";
-import { subscribeToAuthState } from '../services/auth';
+import Heading from "../components/atoms/Heading.vue";
+import { subscribeToAuthState } from '../services/auth.js';
 import { saveCars, subscribeToNewPublication } from '../services/publication.js'
 
 let unsubscribeAuth = () => { };
@@ -15,17 +15,16 @@ export default {
       selectedFiles: [null, null, null, null],
       photoPreview: ["", "", "", ""],
       cars: [],
-
-      availableGadgets: [
+      accessories: [
         { id: 'bt', name: 'Bluetooth' },
         { id: 'gps', name: 'GPS' },
         { id: 'wifi', name: 'Wi-Fi' },
         { id: 'revCam', name: 'Cámara de reversa' },
         { id: 'parkSense', name: 'Sensores de estacionamiento' },
         { id: 'cruiseCtrl', name: 'Control de crucero' },
-        { id: 'heatSeats', name: 'Asientos calefactables' },
+        { id: 'heatSeat', name: 'Asientos calefactables' },
         { id: 'ac', name: 'Aire acondicionado' },
-        { id: 'sunroof', name: 'Techo solar' },
+        { id: 'sunRoof', name: 'Techo solar' },
         { id: 'touchScreen', name: 'Pantalla Táctil' },
         { id: 'wirelessCharge', name: 'Carga inalámbrica' },
         { id: 'soundSystem', name: 'Sistema de sonido' },
@@ -51,7 +50,7 @@ export default {
         asientos: "",
         puertas: "",
         transmision: "",
-        gadgets: []
+        accessories: []
       },
       loggedUser: {
         id: null,
@@ -76,11 +75,19 @@ export default {
         asientos: false,
         puertas: false,
         transmision: false,
-        gadgets: false
+        accessories: false
       }
     };
   },
   methods: {
+    toggleAccessory(accessory) {
+      const index = this.newCar.accessories.findIndex(acc => acc.id === accessory.id);
+      if (index === -1) {
+        this.newCar.accessories.push({ id: accessory.id, name: accessory.name });
+      } else {
+        this.newCar.accessories.splice(index, 1);
+      }
+    },
     // Validamos las preguntas de la primera sección y agregamos mensajes "personalizados" según cada error (marca y modelo después vana estar cargados en una api por lo que va a ser un select)
     validateStep1() {
       // Validación para "marca" con los respectivos mensajes de cada erorr
@@ -219,10 +226,10 @@ export default {
       }
 
       // Se me ocurrió validarlo así pero no se si está bien, sino lo sacamos
-      if (this.newCar.gadgets.length == 0 ) {
-        this.errors.gadgets = "Selecciona al menos un gadget";
+      if (this.newCar.accessories.length == 0 ) {
+        this.errors.accessories = "Selecciona al menos un accessorio";
       } else {
-        this.errors.gadgets = null;
+        this.errors.accessories = null;
       }
 
       if (!this.newCar.precio) {
@@ -238,7 +245,7 @@ export default {
         this.errors.precio = null;
       }
 
-      return !this.errors.chasis && !this.errors.motor && !this.errors.puertas && !this.errors.asientos && !this.errors.gadgets && !this.errors.precio;
+      return !this.errors.chasis && !this.errors.motor && !this.errors.puertas && !this.errors.asientos && !this.errors.accessories && !this.errors.precio;
     },
 
     validateStep4() {
@@ -333,7 +340,7 @@ export default {
 <template>
 
   <form action="#" @submit.prevent="handleSubmit" class="max-w-md w-96 m-auto my-4">
-    <Heading>Registrar vehículo</Heading>
+    <Heading :type="1">Registrar vehículo</Heading>
 
     <section v-if="step === 1">
       <div class="relative w-full  group mb-10">
@@ -455,7 +462,7 @@ export default {
 
 
     <section v-if="step === 3">
-      <Heading>Paso 3</Heading>
+      <Heading :type="1">Paso 3</Heading>
       <div class="grid md:grid-cols-2 md:gap-6">
         <div class="relative w-full  group mb-10">
           <label for="underline_select" class="sr-only">Chasis</label>
@@ -533,16 +540,18 @@ export default {
       </div>
 
       <div class="relative w-full group mb-10">
-        <h3 class="text-gray-700 font-semibold mb-2">Selecciona gadgets adicionales:</h3>
-        <div v-for="gadget in availableGadgets" :key="gadget.id" class="flex items-center mb-2">
+        <h3 class="text-gray-700 font-semibold mb-2">Selecciona accesorios adicionales:</h3>
+        <div v-for="accessory in accessories" :key="accessory.id" class="flex items-center mb-2">
           <input 
             type="checkbox" 
-            :id="gadget.id" 
-            :value="gadget.id" 
-            v-model="newCar.gadgets" />
-          <label :for="gadget" class="ml-2 text-gray-500">{{ gadget.name }}</label>
+            :id="accessory.id" 
+            :value="accessory" 
+            :checked="newCar.accessories.some(acc => acc.id === accessory.id)"
+            @change="toggleAccessory(accessory)" 
+            />
+          <label :for="accessory.id" class="ml-2 text-gray-500">{{ accessory.name }}</label>
         </div>
-        <p v-if="errors.gadgets" class="text-red-500 text-xs italic mt-2">{{ errors.gadgets }}</p>
+        <p v-if="errors.accessories" class="text-red-500 text-xs italic mt-2">{{ errors.accessories }}</p>
       </div>
 
       <button @click="prevStep" type="button"
@@ -554,7 +563,7 @@ export default {
 
 
     <section v-if="step === 4">
-      <Heading>Paso 4</Heading>
+      <Heading :type="1">Paso 4</Heading>
     
       <div class="mb-4">
         <input type="file" @change="handleFileSelection(0, $event)" />

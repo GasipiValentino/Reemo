@@ -1,18 +1,11 @@
 <script>
-import UserEdit from "./organisms/UserEdit.vue";
-
+// molecules
 export default {
   name: "User",
-  components: { UserEdit },
   props: {
     user: {
       type: Object,
       required: true,
-    },
-  },
-  methods: {
-    openUserEdit() {
-      this.$refs.UserEdit.openUserEdit();
     },
   },
 };
@@ -40,9 +33,9 @@ export default {
       </p>
     </div>
     <div class="inline-flex items-center text-base font-semibold text-gray-900">
-      <!-- <router-link to="/Profile/Edit" class="text-blue-700 underline">Editar</router-link> -->
-      <button type="button" @click="openUserEdit">Editar</button>
+      <router-link to="/Profile/Edit" class="text-blue-700 underline"
+        >Editar</router-link
+      >
     </div>
   </div>
-  <UserEdit ref="UserEdit" />
 </template>

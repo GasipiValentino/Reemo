@@ -57,6 +57,8 @@ export default {
       }
 
       this.close();
+
+      this.$router.push('/Profile')
     },
   },
 };

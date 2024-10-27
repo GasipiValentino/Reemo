@@ -1,5 +1,5 @@
 <script>
-import Heading from "../components/Heading.vue";
+import Heading from "../components/atoms/Heading.vue";
 import { register } from "../services/auth";
 
 export default {
@@ -77,7 +77,7 @@ export default {
   </div>
 
   <form action="#" @submit.prevent="handleSubmit" class="max-w-md w-96 m-auto">
-    <Heading>Crear una Cuenta</Heading>
+    <Heading :type="1">Crear una Cuenta</Heading>
 
     <div
       v-if="errorMsg"

@@ -9,7 +9,7 @@ import {
 import { db } from "../services/firebase.js";
 import { subscribeToAuthState } from "../services/auth.js";
 
-import Heading from "../components/Heading.vue";
+import Heading from "../components/atoms/Heading.vue";
 import CardCar from "../components/CardCar.vue";
 import AddIcon from "../icons/AddIcon.vue";
 
@@ -81,7 +81,7 @@ export default {
 </script>
 
 <template>
-  <Heading class="p-4 max-w-md mx-auto md:max-w-screen-xl"
+  <Heading :type="1" class="p-4 max-w-md mx-auto md:max-w-screen-xl"
     >Publicaciones</Heading
   >
 
