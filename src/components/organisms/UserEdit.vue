@@ -1,5 +1,6 @@
 <script>
 import { editMyProfile, subscribeToAuthState } from "../../services/auth.js";
+import { addAlert } from "../../services/alerts.js";
 
 import Heading from "../atoms/Heading.vue";
 import AddImg from "../../icons/addImg.vue";
@@ -22,47 +23,71 @@ export default {
         photoPreview: null,
         photoURL: '',
       },
-      errorMessage: '',
       editing: false,
       isVisible: false,
       isConfirmModalVisible: false,
       initialData: {} // Datos originales de usuario
     };
   },
+  computed: {
+    hasChanges() {
+      // Crear una copia de editData e initialData sin los campos de fotos
+      const { photo, photoPreview, photoURL, ...editDataWithoutPhotos } = this.editData;
+      const { photo: _, photoPreview: __, photoURL: ___, ...initialDataWithoutPhotos } = this.initialData;
+
+      // Comparar los objetos resultantes
+      return JSON.stringify(editDataWithoutPhotos) !== JSON.stringify(initialDataWithoutPhotos);
+    }
+  },
   methods: {
     async handleSubmit() {
       if (this.editing) return;
+      
+      if (!this.hasChanges) {
+        this.closeUserEdit();
+        return;
+      }
 
       if(!this.editData.userName || !this.editData.name || !this.editData.lastName) {
-        this.errorMessage = 'Por favor completa todos los campos.';
+        addAlert("Por favor completa todos los campos.", "error");
         return;
       }
       this.isVisible = false;
       this.editing = true;
+      document.body.classList.remove("no-scroll");
 
       try {
         const updatedData = {
           ...this.editData,
-          photo: this.editData.photo ? this.editData.photo : this.editData.photoURL
+          photo: this.editData.photo ? this.editData.photo : this.editData.photoURL,
         };
 
         await editMyProfile(updatedData);
-        console.log("Perfil editado con éxito")
+        addAlert("Perfil editado con éxito", "success")
+        // actualizar initialdata
+        this.initialData = { ...this.editData };
         this.$router.push('/Profile');
       } catch(error) {
         console.error(error);
+        addAlert("Error al editar el perfil", "error");
       } finally {
         this.editing = false;
       }
     },
     openUserEdit() {
       this.isVisible = true;
+      document.body.classList.add("no-scroll");
     },
     confirmCloseUserEdit() {
+      if (!this.hasChanges) {
+        this.closeUserEdit();
+        return;
+      }
       this.isConfirmModalVisible = true;
     },
     closeUserEdit() {
       this.isVisible = false;
+      document.body.classList.remove("no-scroll");
     },
     discardChanges() {
       this.editData = { ...this.initialData }; // Restaura datos originales de usuario
@@ -95,9 +120,10 @@ export default {
 <template>
   <div 
     v-if="isVisible" 
-    @click.self="confirmCloseUserEdit"
+    @mousedown.self="confirmCloseUserEdit"
     class="modal-overlay" 
-    :class="{ 'overflow-hidden': isModalVisible }">
+    :class="{ 'overflow-hidden': isVisible }"
+    >
     <ConfirmModal
       v-if="isConfirmModalVisible"
       :isVisible="isConfirmModalVisible"
@@ -126,9 +152,9 @@ export default {
       {{  !editing ? 'Guardar' : 'Guardando...' }}
     </button>
     </div>
-    <Alert v-if="errorMessage" severity="error">
+<!--     <Alert v-if="errorMessage" severity="error">
       {{ errorMessage }}
-    </Alert>
+    </Alert> -->
     <div class="relative">
       <figure class="flex items-center justify-center w-full mb-5">          
         <img 

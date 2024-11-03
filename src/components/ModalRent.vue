@@ -1,5 +1,6 @@
 <script>
 import { isCarAlreadyRented, submitRentalRequest } from "../services/rentedCarService";
+import { addAlert } from "../services/alerts";
 
 export default {
   props: ["car", "loggedUser", "rented"],
@@ -28,7 +29,7 @@ export default {
         !this.rentedFromDate ||
         !this.rentedUntilDate
       ) {
-        alert("Por favor, completa todos los campos.");
+        addAlert("Por favor, completa todos los campos.", "error");
         return;
       }
 
@@ -36,7 +37,7 @@ export default {
         const alreadyRented = await isCarAlreadyRented(this.car.id);
 
         if (alreadyRented) {
-          console.log("este auto ya esta alquilado");
+          addAlert("este auto ya esta alquilado", "info");
           return;
         }
 
@@ -53,7 +54,7 @@ export default {
         await submitRentalRequest(rentalRequest);
 
       } catch (error) {
-        console.error("Error al enviar solicitud de alquiler:", error);
+        addAlert("Error al enviar solicitud de alquiler", "error");
       }
 
       this.close();

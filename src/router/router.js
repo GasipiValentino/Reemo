@@ -9,7 +9,6 @@ import Register from "../pages/Register.vue";
 import Publications from "../pages/Publications.vue";
 import Publish from "../pages/CarPublish.vue";
 import CarDetails from "../pages/CarDetails.vue";
-import UserEdit from "../components/organisms/UserEdit.vue";
 
 const routes = [
   { path: "/", component: Home },
@@ -18,9 +17,8 @@ const routes = [
   { path: "/Register", component: Register },
   { path: "/Publications", component: Publications },
   { path: "/Publish", component: Publish, meta: { needsAuth: true } },
-  { path: "/Profile/Edit", component: ProfileEdit, meta: { needsAuth: true }, props: { showEditModal: true }  },
+  { path: "/Profile/Edit", component: ProfileEdit, meta: { needsAuth: true }},
   { path: "/CarDetails/:id", name: "CarDetails", component: CarDetails, props: true, meta: { requiresAuth: true } }, // Agregué 'name'
-  { path: '/Profile/Edit', meta: { needsAuth: true }, component: UserEdit },
 ];
 
 // Creamos el router usando las rutas que definimos y definiendo el modo

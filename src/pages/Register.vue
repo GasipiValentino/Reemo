@@ -1,6 +1,8 @@
 <script>
-import Heading from "../components/atoms/Heading.vue";
 import { register } from "../services/auth";
+import { addAlert } from "../services/alerts";
+
+import Heading from "../components/atoms/Heading.vue";
 
 export default {
   name: "Register",
@@ -31,7 +33,7 @@ export default {
       } catch (error) {
         let errorCode = error.code;
 
-        if (errorCode === "auth/missing-password") {
+/*         if (errorCode === "auth/missing-password") {
           this.errorMsg = "Para crear un usuario debes ingresar una contraseña";
         } else if (errorCode === "auth/weak-password") {
           this.errorMsg = "La contraseña debe tener al menos 6 caracteres";
@@ -39,12 +41,24 @@ export default {
           this.errorMsg = "El email utilizado ya tiene un usuario asignado";
         } else if (errorCode === "auth/invalid-email") {
           this.errorMsg = "El email ingresado no es válido";
+        } */
+
+        switch (errorCode) {
+          case 'auth/missing-password':
+            return addAlert('Para crear un usuario debes ingresar una contraseña', 'warning');
+          case 'auth/weak-password':
+            return addAlert('La contraseña debe tener al menos 6 caracteres', 'warning');
+          case 'auth/email-already-in-use':
+            return addAlert('El mail utilizado ya tiene un usuario asignado', 'error');
+          case 'auth/invalid-email':
+              return addAlert('El email ingresado no es válido', 'error');
+          default:
+            return addAlert('Error al registrar usuario', 'error');
+          }
+        } finally {
+          this.loading = false;
         }
 
-        console.error("[Login.vue] Error al registrar: ", error);
-      }
-
-      this.loading = false;
     },
   },
 };

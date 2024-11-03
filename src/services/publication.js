@@ -1,11 +1,11 @@
-import { addDoc, collection, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
+import { addDoc, doc, deleteDoc, getDoc, collection, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from './firebase';
 
 async function uploadImage(file, userId, carId) {
   if (!file) return null;
-  const timestamp = Date.now(); // Generar un timestamp
-  const storageRef = ref(storage, `cars/${userId}/${carId}-car-${timestamp}.jpg`); 
+  const timestamp = Date.now();
+  const storageRef = ref(storage, `cars/${userId}/${carId}/${timestamp}.jpg`); 
   await uploadBytes(storageRef, file);
   const downloadURL = await getDownloadURL(storageRef);
   return downloadURL;
@@ -14,10 +14,13 @@ async function uploadImage(file, userId, carId) {
 export async function saveCars({ user_id, email, marca, modelo, año, chasis, motor, combustible, kilometraje, patente, transmision, puertas, asientos, description, direccion, precio, accessories }, images) {
   const carsRef = collection(db, 'cars');
 
+  // Cree esto que es como un id temporal parapasarlo como tercer parámetro y que funcione el storage y las fotos de un mismo auto se guarden en la misma carpeta
+  const carId = `${user_id}-${Date.now()}`;
+
   try {
     const photoURLs = [];
     for (let i = 0; i < images.length; i++) {
-      const url = await uploadImage(images[i], user_id, i);
+      const url = await uploadImage(images[i], user_id, carId);
       if (url) {
         photoURLs.push(url);
       }
@@ -41,7 +44,9 @@ export async function saveCars({ user_id, email, marca, modelo, año, chasis, mo
       direccion,
       precio,
       accessories: accessories || [],
-      images: photoURLs, 
+      // isValidated:false,
+      isAvailable: true,
+      images: photoURLs,
       created_at: serverTimestamp(),
     });
   } catch (error) {
@@ -81,4 +86,33 @@ export function subscribeToNewPublication(callback){
         callback(messages);
     });
 
+}
+
+export async function unsubscribeToPublication(idPublication) {
+  try {
+    const publicationRef = doc(db, 'cars', idPublication);
+    const publicationSnapshot = await getDoc(publicationRef);
+
+    if (!publicationSnapshot.exists()) {
+      throw new Error('La publicación no existe');
+    }
+
+    const publicacionData = publicationSnapshot.data();
+    const images = publicacionData.images || [];
+
+    // Eliminar las imágenes utilizando el carId
+    for (const fotoURL of images) {
+      const fotoRef = ref(storage, fotoURL);
+      await deleteObject(fotoRef);
+    }
+
+    // Eliminar el documento de la publicación en Firestore
+    await deleteDoc(publicationRef);
+
+    console.log('Publicación y fotos eliminadas correctamente.');
+    return { success: true };
+  } catch (error) {
+    console.error('Error eliminando la publicación y sus fotos:', error);
+    return { success: false, message: error.message };
+  }
 }

@@ -44,7 +44,8 @@ export default {
     this.cars = carsSnapshot.docs
       .map((doc) => ({ id: doc.id, ...doc.data() }))
       .filter((car) => 
-        car.user_id !== this.loggedUser.id && !rentedCars.includes(car.id)
+        car.user_id !== this.loggedUser.id && !rentedCars.includes(car.id)  && car.isAvailable == true
+        // && car.isValidated == true 
       );
       } catch (error) {
         console.error("Error al buscar autos:", error);
@@ -144,7 +145,7 @@ export default {
       v-for="(car, index) in cars"
       :key="index"
       class="border-4 rounded-lg shadow-md"
-    >
+      >
       <CardCar :car="car" @rentCar="rentCar(car)"/>
     </div>
   </div>

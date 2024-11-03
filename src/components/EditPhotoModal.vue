@@ -1,8 +1,8 @@
 <script>
 import { editMyProfilePhoto } from '../services/auth'
+import { addAlert } from '../services/alerts';
 
 import AddImg from '../icons/addImg.vue';
-
 
 export default {
   name: "EditPhotoModal",
@@ -23,16 +23,17 @@ export default {
     async handleSubmit() {
       if(this.editing) return;
       if(!this.editData.photo) {
-        this.errorMessage = 'Por favor selecciona una imagen.';
+        addAlert('Por favor selecciona una imagen', 'error');
         return;
       }
       this.editing = true;
       try {
         await editMyProfilePhoto(this.editData.photo);
-        console.log("Foto editada con éxito")
+        addAlert('Foto editada con éxito', 'success');
+        this.initialData = { ...this.editData };
         this.close();
       } catch(error) {
-        console.error(error);
+        addAlert('Error al editar la foto', 'error');
       } finally {
         this.editing = false;
       }

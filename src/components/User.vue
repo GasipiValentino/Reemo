@@ -27,7 +27,7 @@ export default {
         v-if="user.photoURL"
         class="w-8 h-8 rounded-full"
         :src="`${user.photoURL}`"
-        :alt="`Foto de perfil de ${user.userName}`"
+        :alt="`Perfil de ${user.userName}`"
       />
       <!-- <img v-else :src="`https://unavatar.io/${user.userName}`" alt="Foto de perfil inexistente"> -->
     </div>

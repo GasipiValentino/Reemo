@@ -1,18 +1,14 @@
 <script>
 import Heading from "../components/atoms/Heading.vue";
-import Alert from '../components/atoms/Alert.vue';
 import Pill from '../components/atoms/Pill.vue';
 
 export default {
   name: "Home",
-  components: { Heading, Alert, Pill },
+  components: { Heading, Pill },
 };
 </script>
 
 <template>
-  <div>
-    <Alert severity="success">Bienvenido a Reemo!</Alert>
-  </div>
     <section
     class="flex items-center mx-auto min-h-96 gap-x-8 flex-wrap max-w-5xl mt-6 px-4"
   >
@@ -40,13 +36,13 @@ export default {
       >
     </div>
   </section>
-  <a href="/#Publish"
+  <a href="/#Publish" class="my-14"
     ><img
       class="hidden lg:block h-auto mb-8 max-w-5xl rounded-lg mx-auto"
       src="../assets/banner.jpg"
       alt="banner de rent car"
   /></a>
-  <section class="bg-white">
+  <section class="bg-white mb-12 max-w-6xl mx-auto">
     <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16">
       <div class="bg-gray-50 border-gray-200 rounded-lg p-8 md:p-12 mb-8">
         <span

@@ -1,5 +1,7 @@
 <script>
 import { login } from "../services/auth";
+import { addAlert } from "../services/alerts";
+
 import Heading from "../components/atoms/Heading.vue";
 
 export default {
@@ -26,16 +28,14 @@ export default {
           // password: this.user.password,
           ...this.user,
         });
-        console.log("Usuario autenticado con éxito :D");
-
+        addAlert("Bienvenido a Reemo!", "success");
         // Redireccionamos al perfil.
         this.$router.push("/Profile");
       } catch (error) {
         let errorCode = error.code;
 
         if (errorCode === "auth/invalid-credential") {
-          this.errorMsg =
-            "Credenciales inválidas. Por favor, revisa tu correo y contraseña.";
+          addAlert("Credenciales inválidas", "error");
         }
 
         console.error("[Login.vue] Error al autenticar: ", error);
@@ -50,13 +50,6 @@ export default {
 <template>
   <form action="#" @submit.prevent="handleSubmit" class="max-w-md w-96 m-auto">
     <Heading :type="1">Iniciar sesión</Heading>
-    <div
-      v-if="errorMsg"
-      class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50"
-      role="alert"
-    >
-      {{ errorMsg }}
-    </div>
     <div class="relative z-0 w-full mb-5 group">
       <input
         type="email"

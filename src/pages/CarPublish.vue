@@ -2,6 +2,8 @@
 import Heading from "../components/atoms/Heading.vue";
 import { subscribeToAuthState } from '../services/auth.js';
 import { saveCars, subscribeToNewPublication } from '../services/publication.js'
+import { validateStep1, validateStep2, validateStep3, validateStep4 } from '../services/validation-service.js';
+
 
 let unsubscribeAuth = () => { };
 
@@ -88,173 +90,17 @@ export default {
         this.newCar.accessories.splice(index, 1);
       }
     },
-    // Validamos las preguntas de la primera sección y agregamos mensajes "personalizados" según cada error (marca y modelo después vana estar cargados en una api por lo que va a ser un select)
     validateStep1() {
-      // Validación para "marca" con los respectivos mensajes de cada erorr
-      if (!this.newCar.marca) {
-        // Si no hay ningún valor en marca, entra en este if y asigna un mensaje de error a this.errors.marca - Que después lo llamamos debajo del input en rojo
-        this.errors.marca = "El campo marca no puede estar vacío";
-      } else if (this.newCar.marca.length < 3) {
-        // Si marca tiene valor pero tiene menos de tres letras, entra en este if y asigna un mensaje de error a this.errors.marca. Que después lo llamamos debajo del input en rojo
-        this.errors.marca = "La marca debe tener al menos 3 letras";
-      } else {
-        // Como no hay ningún error, se asigna null a this.errors.marca, lo que significa que no hay ningún error para este campo.
-        this.errors.marca = null;
-      }
-
-      // SE REPITEN VALIDACIONES DE MARCA ⬇️⬇️⬇️⬇️⬇️⬇️
-
-      // Validación para "modelo" con los respectivos mensajes de cada erorr
-      if (!this.newCar.modelo) {
-        this.errors.modelo = "El campo modelo no puede estar vacío";
-      } else if (this.newCar.modelo.length < 3) {
-        this.errors.modelo = "El modelo debe tener al menos 3 letras";
-      } else {
-        this.errors.modelo = null;
-      }
-
-      // Validación para "año" con los respectivos mensajes de cada erorr
-      if (!this.newCar.año) {
-        this.errors.año = "El campo año no puede estar vacío";
-      } else if (isNaN(this.newCar.año)) {
-        this.errors.año = "El año debe ser un número";
-      } else if (this.newCar.año < 2005 ) {
-        this.errors.año = "El año debe ser mayor a 2005";
-      } else if (this.newCar.año > 2024 ) {
-        this.errors.año = "El año no puede ser mayor que 2024";
-      } else {
-        this.errors.año = null;
-      }
-
-      // Validación para "patente" con los respectivos mensajes de cada erorr
-      if (!this.newCar.patente) {
-        this.errors.patente = "El campo patente no puede estar vacío";
-      } else if (this.newCar.patente.length < 6) {
-        this.errors.patente = "La patente debe tener al menos 6 caracteres";
-      } else if (this.newCar.patente.length > 7) {
-        this.errors.patente = "La patente no puede tener más de 7 caracteres - No pongas espacios ni guiones";
-      } else {
-        this.errors.patente = null;
-      }
-
-      // Retorna true solo si todos los campos son válidos, es decir qwue no se encontraron errores
-      return !this.errors.marca && !this.errors.modelo && !this.errors.año && !this.errors.patente;
+      return validateStep1(this.newCar, this.errors);
     },
-
     validateStep2() {
-
-      if (!this.newCar.description) {
-        this.errors.description = "El campo descripción no puede estar vacío";
-      } else if (this.newCar.description.length < 80) {
-        this.errors.description = "La descripción debe tener al menos 80 letras";
-      } else if (this.newCar.description.length > 300) {
-        this.errors.description = "La descripción no puede tener más de 300 letras";
-      } else {
-        this.errors.description = null;
-      }
-
-      if (!this.newCar.direccion) {
-        this.errors.direccion = "El campo dirección no puede estar vacío";
-      } else if (this.newCar.direccion.length < 6) {
-        this.errors.direccion = "La dirección debe tener al menos 6 caracteres";
-      } else if (this.newCar.direccion.length > 200) {
-        this.errors.direccion = "La dirección no puede tener más de 200 caracteres";
-      } else if (!/^[\w\s.,#-]+$/.test(this.newCar.direccion)) {
-        this.errors.direccion = "La dirección contiene caracteres no permitidos";
-      } else if (!/\d/.test(this.newCar.direccion)) {
-        this.errors.direccion = "La dirección debe contener al menos un número";
-      } else {
-        this.errors.direccion = null; // Validación exitosa
-      }
-
-      if (!this.newCar.combustible) {
-        this.errors.combustible = "El campo combustible no puede estar vacío";
-      } else {
-        this.errors.combustible = null;
-      }
-
-      if (!this.newCar.transmision) {
-        this.errors.transmision = "El campo transmisión no puede estar vacío";
-      } else {
-        this.errors.transmision = null;
-      }
-
-      if (!this.newCar.kilometraje) {
-        this.errors.kilometraje = "El campo kilometraje no puede estar vacío";
-      } else {
-        this.errors.kilometraje = null;
-      }
-
-      return !this.errors.description && !this.errors.direccion && !this.errors.combustible && !this.errors.kilometraje && !this.errors.transmision;
+      return validateStep2(this.newCar, this.errors);
     },
-
     validateStep3() {
-      if (!this.newCar.chasis) {
-        this.errors.chasis = "El campo chasis no puede estar vacío";
-      } else {
-        this.errors.chasis = null;
-      }
-
-      if (!this.newCar.motor) {
-        this.errors.motor = "El campo motor no puede estar vacío";
-      } else {
-        this.errors.motor = null;
-      }
-
-      if (!this.newCar.puertas) {
-        this.errors.puertas = "El campo puertas no puede estar vacío";
-      } else if (isNaN(this.newCar.puertas)) {
-        this.errors.puertas = "El campo puertas debe ser un número";
-      } else if (this.newCar.puertas < 2 ) {
-        this.errors.puertas = "El auto debe tener más de 2 puertas";
-      } else if (this.newCar.puertas > 5 ) {
-        this.errors.puertas = "El auto no puede tener más de 5 puertas";
-      } else {
-        this.errors.puertas = null;
-      }
-
-      if (!this.newCar.asientos) {
-        this.errors.asientos = "El campo asientos no puede estar vacío";
-      } else if (isNaN(this.newCar.asientos)) {
-        this.errors.asientos = "El campo asientos debe ser un número";
-      } else if (this.newCar.asientos < 2 ) {
-        this.errors.asientos = "El auto debe tener más de 2 asientos";
-      } else if (this.newCar.asientos > 7 ) {
-        this.errors.asientos = "El auto no puede tener más de 7 asientos";
-      } else {
-        this.errors.asientos = null;
-      }
-
-      // Se me ocurrió validarlo así pero no se si está bien, sino lo sacamos
-      if (this.newCar.accessories.length == 0 ) {
-        this.errors.accessories = "Selecciona al menos un accessorio";
-      } else {
-        this.errors.accessories = null;
-      }
-
-      if (!this.newCar.precio) {
-        this.errors.precio = "El campo precio no puede estar vacío";
-      } else if (this.newCar.precio < 1000) {
-        this.errors.precio = "El precio por hora no puede ser menor a $1000";
-      } else if (this.newCar.precio > 15000) {
-        this.errors.precio = "El precio por hora no puede ser mayor a $15000";
-      } else if (isNaN(this.newCar.precio)) {
-        this.errors.precio = "El campo precio debe ser un número";
-      } 
-      else {
-        this.errors.precio = null;
-      }
-
-      return !this.errors.chasis && !this.errors.motor && !this.errors.puertas && !this.errors.asientos && !this.errors.accessories && !this.errors.precio;
+      return validateStep3(this.newCar, this.errors);
     },
-
     validateStep4() {
-      if (this.selectedFiles.length < 4) {
-        this.errors.photos = "El auto no puede tener más de 7 asientos";
-        return false;
-      }
-      this.errors.photos = null;
-      return true;
+      return validateStep4(this.selectedFiles, this.errors);
     },
 
     nextStep() {

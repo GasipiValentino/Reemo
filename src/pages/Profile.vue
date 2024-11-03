@@ -1,21 +1,24 @@
 <script>
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../services/firebase.js";
+import { collection, getDocs, deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
+import { db, storage } from "../services/firebase.js";
+import { ref, deleteObject } from "firebase/storage";
 import { subscribeToAuthState } from "../services/auth.js";
 
 import Heading from "../components/atoms/Heading.vue";
 import CardCar from "../components/CardCar.vue";
 import User from "../components/User.vue";
 import RentedCar from "../components/RentedCar.vue";
+import PopoverPublication from "../components/organisms/profile/PopoverPublication.vue";
 
-let unsubscribeAuth = () => {};
+let unsubscribeAuth = () => { };
 
 export default {
   name: "MyProfile",
-  components: { Heading, CardCar, User, RentedCar },
+  components: { Heading, CardCar, User, RentedCar, PopoverPublication },
   data() {
     return {
       cars: [],
+      loading: false,
       loggedUser: {
         id: null,
         email: null,
@@ -37,7 +40,6 @@ export default {
           ...doc.data(),
         }));
 
-        // Filtramos los autos por user_id
         const userCars = allCars.filter(
           (car) => car.user_id === this.loggedUser.id,
         );
@@ -54,6 +56,71 @@ export default {
     goToCarDetails(carId) {
       this.$router.push({ name: "CarDetails", params: { id: carId } });
     },
+
+
+
+    async handleDelete(carId) {
+      try {
+        this.loading = true;
+        const carRef = doc(db, "cars", carId);
+        const carSnapshot = await getDoc(carRef);
+
+        if (carSnapshot.exists()) {
+          const carData = carSnapshot.data();
+          const imageUrls = carData.images || [];
+
+          for (const imageUrl of imageUrls) {
+            const imageRef = ref(storage, imageUrl);
+            try {
+              await deleteObject(imageRef);
+            } catch (deleteError) {
+              console.error(`Error al eliminar la imagen ${imageUrl}:`, deleteError);
+            }
+          }
+
+          await deleteDoc(carRef);
+          this.cars = this.cars.filter((car) => car.id !== carId);
+          console.log("El auto y sus fotos fueron borrados con éxito.");
+        } else {
+          console.error("El auto no existe.");
+        }
+      } catch (error) {
+        console.error("Error al borrar el auto y sus fotos:", error);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async handleToggleAvailability(carId) {
+      try {
+        this.loading = true;
+        const carRef = doc(db, "cars", carId);
+        const carSnapshot = await getDoc(carRef);
+
+        if (carSnapshot.exists()) {
+          const carData = carSnapshot.data();
+          const newAvailability = !carData.isAvailable; // Para cambiare la disponibilidad del auto
+
+          await updateDoc(carRef, {
+            isAvailable: newAvailability, // Para actualizar el estado en Firestore
+          });
+
+          // PAra actualizar el estado del auto en el array cars, es para que se actualice el estado localmente y se muestren bien los botones de des/habilitar
+          const carIndex = this.cars.findIndex(car => car.id === carId);
+          if (carIndex !== -1) {
+            this.cars[carIndex].isAvailable = newAvailability; //Aca le asignamos la nueva disponivbilidad
+          }
+
+          console.log(`La disponibilidad del auto ${carId} ahora es: ${newAvailability}`);
+        } else {
+          console.error("El auto no existe.");
+        }
+      } catch (error) {
+        console.error("Error al cambiar la disponibilidad del auto:", error);
+      } finally {
+        this.loading = false;
+      }
+    }
   },
   mounted() {
     unsubscribeAuth = subscribeToAuthState((newUserData) => {
@@ -111,13 +178,42 @@ export default {
   <div
     class="max-w-md mx-auto md:max-w-screen-xl p-4 mb-4 grid gap-4 md:grid-cols-2 md:mb-8 lg:grid-cols-4"
   >
-    <div
-      v-for="(car, index) in cars"
-      :key="index"
-      class="border-4 rounded-lg shadow-md"
+  <div
+  v-for="(car, index) in cars"
+  :key="index"
+  class="border-4 rounded-lg shadow-md relative"
+>
+  <CardCar :car="car" />
+  <PopoverPublication class="absolute top-2 right-2">
+    <div 
+      v-if="car.user_id === loggedUser.id" 
+      @click="handleDelete(car.id)" 
+      class="flex items-center justify-between space-x-2 cursor-pointer mb-5 hover:text-red-400"
     >
-      <CardCar :car="car"/>
+      <p>Eliminar Vehículo</p>
+      <button>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zM7 6h10v13H7zm2 2v9h2V8zm4 0v9h2V8z"/></svg>
+      </button>
     </div>
+
+    <div v-if="car.user_id === loggedUser.id" @click="handleToggleAvailability(car.id)" class="flex items-center justify-between space-x-2 cursor-pointer" 
+      :class="car.isAvailable ? 'hover:text-yellow-400' : 'hover:text-green-400'"
+    >
+      <p>{{ car.isAvailable ? 'Marcar como No Disponible' : 'Marcar como Disponible' }}</p>
+      <button>
+        <svg v-if="car.isAvailable" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path fill="currentColor" fill-rule="evenodd" d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10m-4.906-3.68L18.32 7.094A8 8 0 0 1 7.094 18.32M5.68 16.906A8 8 0 0 1 16.906 5.68z"/>
+        </svg>
+        <svg v-else xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16">
+          <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m2.75 8.75l3.5 3.5l7-7.5" />
+        </svg>
+      </button>
+    </div>
+  </PopoverPublication>
+
+
+
+</div>
     <router-link
       to="/Publish"
       class="flex flex-col justify-center items-center text-gray-300 border-4 border-gray-200 hover:text-gray-400 hover:border-gray-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center"

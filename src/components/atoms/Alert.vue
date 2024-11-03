@@ -1,4 +1,6 @@
 <script>
+import { alerts } from "../../services/alerts";
+
 import Success from "../../icons/Success.vue";
 import Info from "../../icons/Info.vue";
 import Warning from "../../icons/Warning.vue";
@@ -7,72 +9,69 @@ import Error from "../../icons/Error.vue";
 export default {
   name: "Alert",
   components: { Success, Info, Warning, Error },
-  props: {
-    severity: {
-      type: String,
-      required: true,
-      validator: (value) => ["success", "info", "warning", "error"].includes(value),
-    },
-    duration: {
-      type: Number,
-      default: 3000, // Duración en milisegundos antes de desaparecer
-    },
-  },
-  data() {
-    return {
-      isVisible: true,
-    };
-  },
   computed: {
-    IconComponent() {
-      switch (this.severity) {
-        case "success":
-          return Success;
-        case "info":
-          return Info;
-        case "warning":
-          return Warning;
-        case "error":
-          return Error;
-        default:
-          return null;
-      }
-    },
+    alerts() {
+      return alerts;
+    }
   },
-  mounted() {
-    setTimeout(() => {
-      this.isVisible = false; // Desactiva la alerta después del tiempo especificado
-    }, this.duration);
+  methods: {
+    iconComponent(severity) {
+      return {
+        success: Success,
+        info: Info,
+        warning: Warning,
+        error: Error,
+      }[severity];
+    }
   },
 };
 </script>
 
 <template>
-  <transition name="slide-fade">
-    <div v-if="isVisible" class="alert-container">
-      <div :class="`alert alert-${severity}`" role="alert">
-        <span class="icon" v-if="IconComponent">
-          <component :is="IconComponent" />
-        </span>
-        <span class="message"><slot /></span>
+  <div class="alert-container">
+    <transition-group 
+      name="slide-bounce"
+      >
+      <div 
+        class="alert-msj"
+        v-for="alert in alerts"
+        :key="alert.id" 
+      >
+        <div 
+          :class="`alert alert-${alert.severity}`" 
+          >
+          <span class="icon" v-if="iconComponent">
+            <component :is="iconComponent(alert.severity)" />
+          </span>
+          <span class="message">{{ alert.message }}</span>
+        </div>
       </div>
-    </div>
-  </transition>
+    </transition-group>
+  </div>
 </template>
 
 <style scoped>
 .alert-container {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%; /* Ocupa el ancho completo */
-  display: flex;
-  justify-content: center; /* Centra horizontalmente */
-  align-items: flex-end; /* Alinea en la parte inferior */
+  gap: .2rem;
   z-index: 1000;
+}
+.alert-msj {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30%;
+  margin: 0 auto;
 }
 
 .alert {
+  width: 100%;
   padding: 1rem;
   border-radius: 0.5rem;
   margin-bottom: 1rem;
@@ -107,17 +106,43 @@ export default {
 }
 
 /* Animación personalizada */
-.slide-fade-enter-active, .slide-fade-leave-active {
-  transition: all 0.5s linear;
+@keyframes bounceInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-10px);
+  }
+  80% {
+    transform: translateY(5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 
-.slide-fade-enter {
-  opacity: 0;
-  transform: translateY(100%);
+@keyframes bounceOutDown {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(-5px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(100%);
+  }
 }
 
-.slide-fade-leave-to {
-  opacity: 0;
-  transform: translateY(100%);
+/* Clases para la transición de entrada y salida con rebote */
+.slide-bounce-enter-active {
+  animation: bounceInUp 0.6s ease-out;
+}
+
+.slide-bounce-leave-active {
+  animation: bounceOutDown 0.6s ease-in;
 }
 </style>

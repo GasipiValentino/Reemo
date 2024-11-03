@@ -40,8 +40,10 @@ export default {
   mounted() {
     unsubscribeAuth = subscribeToAuthState((newUserData) => {
       if (newUserData && newUserData.id) {
-        this.internalUserId = newUserData.id;
-        this.loadRentedCars();
+        if(newUserData && newUserData.id && this.internalUserId !== newUserData.id){
+          this.internalUserId = newUserData.id;
+          this.loadRentedCars();
+        }
       } else {
         this.internalUserId = null;
       }

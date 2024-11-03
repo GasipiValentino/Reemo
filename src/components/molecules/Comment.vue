@@ -31,16 +31,18 @@ export default {
       }
 
       if (this.carId && this.newComment.text) {
-        console.log("datos del usuario", this.loggedUser);
+        // console.log("datos del usuario", this.loggedUser);
         saveComment({
           car_id: this.carId,
           user_id: this.loggedUser.id,
           user_email: this.loggedUser.email,
-          user_Name: this.loggedUser.userName,
+          user_name: this.loggedUser.userName,
           user_photo: this.loggedUser.photoURL,
           text: this.newComment.text,
         });
         this.newComment.text = "";
+
+
       } else {
         console.error("Faltan datos para enviar el comentario.");
       }
@@ -72,7 +74,6 @@ export default {
         console.error("No se pudo obtener los datos del usuario.");
       }
     });
-    // console.log('Id de cada comentario ',this.carId)
   },
   unmounted() {
     unsubscribeAuth();
@@ -102,7 +103,7 @@ export default {
                 :src="comment.user_photo"
                 alt=""
               />
-              @{{ comment.user_Name }}
+              @{{ comment.user_name }}
             </p>
             <p class="text-sm text-gray-600">
               <time pubdate datetime="2022-02-12" title="February 12th, 2022">{{
@@ -112,7 +113,7 @@ export default {
           </div>
         </footer>
         <p class="text-gray-500">{{ comment.text }}</p>
-        <div class="text-md text-gray-600">{{ formatDate(comment.createdAt) || 'Enviando...' }}</div>
+        <div class="text-md text-gray-600">{{ comment.createdAt ? formatDate(comment.createdAt.toDate()) : "Enviando..." }}</div>
       </article>
 
       <form class="mb-6" action="#" @submit.prevent="handleSubmit">

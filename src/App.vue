@@ -3,12 +3,14 @@ import { logout, subscribeToAuthState } from "./services/auth";
 
 import Navbar from "./components/Navbar.vue";
 import FooterLayout from "./components/Footer.vue";
+import Alert from "./components/atoms/Alert.vue";
 
 export default {
   name: "App",
   components: {
     Navbar,
     FooterLayout,
+    Alert,
   },
   data() {
     return {
@@ -44,6 +46,7 @@ export default {
   <main class="flex flex-col min-h-screen pt-20 mx-auto">
     <router-view />
   </main>
+  <Alert />
 
   <FooterLayout />
 </template>
@@ -51,7 +54,7 @@ export default {
 <style>
 html {
     font-family:
-      Onest,
+      "Onest",
       Monaco,
       Lucida Console,
       "Courier New",
@@ -89,7 +92,7 @@ html {
   h4 {
     margin: 0;
     font-family:
-      Onest,
+      "Onest",
       system-ui,
       -apple-system,
       BlinkMacSystemFont,
@@ -101,5 +104,8 @@ html {
       "Open Sans",
       "Helvetica Neue",
       sans-serif;
+  }
+  .no-scroll {
+    overflow: hidden;
   }
 </style>

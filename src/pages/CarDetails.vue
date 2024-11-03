@@ -1,3 +1,5 @@
+
+
 <script>
 import {
   collection,
@@ -10,8 +12,8 @@ import {
 } from "firebase/firestore";
 import { db } from "../services/firebase.js";
 import { subscribeToAuthState } from "../services/auth.js";
-import { subscribeToNewPublication } from "../services/publication.js";
 import ModalRent from "../components/ModalRent.vue";
+import defaultCarImage from '../assets/Car-Img.png';
 
 import Heading from "../components/atoms/Heading.vue";
 import Comment from "../components/molecules/Comment.vue";
@@ -23,8 +25,6 @@ import Accelerometer from "../icons/Accelerometer.vue";
 import Check from "../icons/Check.vue";
 import Cross from "../icons/Cross.vue";
 import Pill from "../components/atoms/Pill.vue";
-
-// let unsubscribeAuth = () => {};
 
 export default {
   props: ["id"],
@@ -52,59 +52,42 @@ export default {
         id: null,
         email: null,
       },
+      currentImage: null, // Nueva propiedad para la imagen principal
     };
   },
   async created() {
     this.errorMsg = "";
+    this.loading = true;
     try {
-      this.loading = true;
-      // console.log('ID del auto:', this.id);
       const carId = this.id;
       const carDoc = doc(db, "cars", carId);
       const carSnapshot = await getDoc(carDoc);
       if (carSnapshot.exists()) {
-        // console.log('Documento encontrado:'),
-        this.car = carSnapshot.data();
-        this.car.id = carSnapshot.id;
-        this.car.rented = this.car.rented || false;
-
+        this.car = { id: carSnapshot.id, ...carSnapshot.data() };
+        this.currentImage = this.car.images && this.car.images.length > 0 ? this.car.images[0] : defaultCarImage;
         await this.checkIfRented();
+      } else {
+        this.errorMsg = "Auto no encontrado.";
       }
     } catch (error) {
-      this.errorMsg =
-        "Hubo un error al obtener los detalles del auto. Volvé a intentar";
+      this.errorMsg = "Hubo un error al obtener los detalles del auto. Volvé a intentar";
+      console.error("Error al obtener los detalles del auto:", error);
     }
     this.loading = false;
   },
   methods: {
     async checkIfRented() {
-      console.log("Valor de car:", this.car);
-
-      if (!this.car || !this.car.id) {
-        console.log("Verificamos id");
-        return;
-      }
+      if (!this.car || !this.car.id) return;
 
       try {
-        // Consulta para buscar en la colección 'rental_requests' donde 'car_id' coincida con el ID del auto actual
         const rentalQuery = query(
           collection(db, "rental_requests"),
           where("car_id", "==", this.car.id)
         );
-
         const querySnapshot = await getDocs(rentalQuery);
 
-        if (!querySnapshot.empty) {
-          // Si hay resultados toma el primero
-          const rentalData = querySnapshot.docs[0].data();
-          // Establece el estado de alquilado
-          this.rented = rentalData.rented;
-          console.log("Auto alquilado:", this.rented);
-        } else {
-          console.log("Este auto no está alquilado.");
-
-          this.rented = false;
-        }
+        this.rented = !querySnapshot.empty && querySnapshot.docs[0].data().rented;
+        console.log("Estado de alquiler:", this.rented);
       } catch (error) {
         console.error("Error al verificar si el auto está alquilado:", error);
       }
@@ -113,17 +96,19 @@ export default {
     openModal() {
       this.$refs.ModalRent.open();
     },
+
+    setCurrentImage(image) {
+      this.currentImage = image; // Cambia la imagen principal al hacer clic en una miniatura
+    },
+
+    setDefaultImage(event) {
+      event.target.src = defaultCarImage; // Imagen de respaldo en caso de error
+    },
   },
   mounted() {
     subscribeToAuthState((newUserData) => {
       this.loggedUser = newUserData;
     });
-
-    subscribeToNewPublication((newCars) => {
-      this.cars = newCars;
-    });
-
-    this.checkIfRented(); // Verifica el estado de alquiler al cargar el componente
   },
 };
 </script>
@@ -157,8 +142,30 @@ export default {
     <section class="py-8 bg-white md:py-16 antialiased">
       <div class="max-w-screen-xl px-4 mx-auto 2xl:px-0">
         <div class="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
-          <div class="shrink-0 max-w-md lg:max-w-lg mx-auto">
-            <img class="w-full" src="../assets/Car-Img.png" alt="" />
+          <div class="car-details">
+            <!-- Imagen principal del carrusel -->
+            <div class="main-image-container">
+              <img 
+                class="my-auto h-16 mx-auto md:h-full" 
+                :src="currentImage" 
+                @error="setDefaultImage"
+                alt="Auto" 
+              />
+            </div>
+        
+            <!-- Miniaturas debajo de la imagen principal -->
+            <div class="thumbnail-container">
+              <img 
+                v-for="(image, index) in car.images" 
+                :key="index"
+                :src="image" 
+                @click="setCurrentImage(image)"
+                @error="setDefaultImage"
+                :class="{ active: image === currentImage }"
+                alt="Miniatura de auto" 
+                class="thumbnail"
+              />
+            </div>
           </div>
 
           <div class="mt-6 sm:mt-8 lg:mt-0">
@@ -236,10 +243,6 @@ export default {
               </div>
             </div>
 
-
-            <!-- boton para alquilar un vehiculo -->
-
-            <!-- <ModalAlquilar ref="modalAlquilar" /> -->
             <ModalRent
               ref="ModalRent"
               :car="car"
@@ -267,3 +270,37 @@ export default {
     <p class="text-center">Cargando...</p>
   </div>
 </template>
+
+<style scoped>
+.main-image-container {
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.main-image-container img{
+  border-radius: 5px;
+}
+
+.thumbnail-container {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.thumbnail {
+  cursor: pointer;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border: 2px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.thumbnail:hover, .thumbnail.active {
+  border: solid 3px #3490dc; 
+  border-radius: 5px;
+}
+</style>
