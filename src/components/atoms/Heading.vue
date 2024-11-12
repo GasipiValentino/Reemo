@@ -28,7 +28,6 @@ export default {
   },
 };
 </script>
-
 <template>
   <component :is="tag" :class="`${textSize} font-bold text-gray-900 `">
     <slot />

@@ -37,7 +37,7 @@ export default {
       </div>
       <hr class="my-6 border-gray-200 sm:mx-auto lg:my-8" />
       <span class="block text-sm text-gray-500 sm:text-center">
-        © 2023 Reemo. Todos los derechos reservados.
+        © 2024 Reemo. Todos los derechos reservados.
       </span>
     </div>
   </footer>

@@ -3,7 +3,7 @@ import Heading from '../components/atoms/Heading.vue';
 import { editMyProfile, subscribeToAuthState } from '../services/auth';
 
 import AddImg from '../icons/addImg.vue';
-import EditPhotoModal from '../components/EditPhotoModal.vue';
+import EditPhotoModal from '../components/user/EditPhotoModal.vue';
 
 let unsubscribeAuth = () => {};
 

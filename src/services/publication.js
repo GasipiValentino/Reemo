@@ -1,5 +1,5 @@
-import { addDoc, doc, deleteDoc, getDoc, collection, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { addDoc, doc, deleteDoc, getDoc, collection, onSnapshot, orderBy, query, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { db, storage } from './firebase';
 
 async function uploadImage(file, userId, carId) {
@@ -56,35 +56,35 @@ export async function saveCars({ user_id, email, marca, modelo, año, chasis, mo
 }
 
 export function subscribeToNewPublication(callback){
-    const carsRef = collection(db, 'cars');
-    const q = query(carsRef, orderBy('created_at'));
+  const carsRef = collection(db, 'cars');
+  const q = query(carsRef, orderBy('created_at'));
 
-    onSnapshot(q, snapshot => {
-        // Transformamos el snapshot en un array de mensajes.
-        const messages = snapshot.docs.map(doc => {
-            return {
-                id: doc.id,
-                email: doc.data().email,
-                marca: doc.data().marca,
-                modelo: doc.data().modelo,
-                año: doc.data().año,
-                chasis: doc.data().chasis,
-                motor: doc.data().motor,
-                combustible: doc.data().combustible,
-                kilometraje: doc.data().kilometraje,
-                patente: doc.data().patente,
-                transmision: doc.data().transmision,
-                puertas: doc.data().puertas,
-                asientos: doc.data().asientos,
-                description: doc.data().description,
-                direccion: doc.data().direccion,
-                precio: doc.data().precio,
-                accessories: doc.data().accessories || []
-            }
-        });
-        // Invocamos el callback que nos pasaron como parámetro y le mandamos los mensajes.
-        callback(messages);
-    });
+  onSnapshot(q, snapshot => {
+      // Transformamos el snapshot en un array de mensajes.
+      const messages = snapshot.docs.map(doc => {
+          return {
+              id: doc.id,
+              email: doc.data().email,
+              marca: doc.data().marca,
+              modelo: doc.data().modelo,
+              año: doc.data().año,
+              chasis: doc.data().chasis,
+              motor: doc.data().motor,
+              combustible: doc.data().combustible,
+              kilometraje: doc.data().kilometraje,
+              patente: doc.data().patente,
+              transmision: doc.data().transmision,
+              puertas: doc.data().puertas,
+              asientos: doc.data().asientos,
+              description: doc.data().description,
+              direccion: doc.data().direccion,
+              precio: doc.data().precio,
+              accessories: doc.data().accessories || []
+          }
+      });
+      // Invocamos el callback que nos pasaron como parámetro y le mandamos los mensajes.
+      callback(messages);
+  });
 
 }
 
@@ -113,6 +113,42 @@ export async function unsubscribeToPublication(idPublication) {
     return { success: true };
   } catch (error) {
     console.error('Error eliminando la publicación y sus fotos:', error);
+    return { success: false, message: error.message };
+  }
+}
+
+export async function deleteCar(id) {
+  try {
+    const response = await unsubscribeToPublication(id); // Asegúrate de que unsubscribeToPublication esté importado correctamente
+    return response.success 
+      ? { success: true, message: 'Publicación eliminada' } 
+      : { success: false, message: response.message };
+  } catch (error) {
+    console.error('Error al eliminar la publicación:', error);
+    return { success: false, message: 'Error al eliminar la publicación' };
+  }
+}
+
+export async function toggleAvailability(carId) {
+  try {
+    const carRef = doc(db, "cars", carId);
+    const carSnapshot = await getDoc(carRef);
+
+    if (!carSnapshot.exists()) {
+      throw new Error("El auto no existe.");
+    }
+
+    const carData = carSnapshot.data();
+    const newAvailability = !carData.isAvailable;
+
+    await updateDoc(carRef, {
+      isAvailable: newAvailability,
+    });
+
+    console.log(`Disponibilidad del auto ${carId} actualizada a: ${newAvailability}`);
+    return { success: true, newAvailability };
+  } catch (error) {
+    console.error("Error al cambiar la disponibilidad del auto:", error);
     return { success: false, message: error.message };
   }
 }

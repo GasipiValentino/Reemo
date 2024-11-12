@@ -1,22 +1,11 @@
-
-
 <script>
-import {
-  collection,
-  doc,
-  getDoc,
-  query,
-  updateDoc,
-  where,
-  getDocs,
-} from "firebase/firestore";
-import { db } from "../services/firebase.js";
+import { getCarById, checkIfCarIsRented } from "../services/car-service.js";
+
 import { subscribeToAuthState } from "../services/auth.js";
 import ModalRent from "../components/ModalRent.vue";
-import defaultCarImage from '../assets/Car-Img.png';
-
 import Heading from "../components/atoms/Heading.vue";
 import Comment from "../components/molecules/Comment.vue";
+import Pill from "../components/atoms/Pill.vue";
 import Transmition from "../icons/Transmition.vue";
 import Chasis from "../icons/Chasis.vue";
 import Engine from "../icons/Engine.vue";
@@ -24,7 +13,8 @@ import GasStation from "../icons/GasStation.vue";
 import Accelerometer from "../icons/Accelerometer.vue";
 import Check from "../icons/Check.vue";
 import Cross from "../icons/Cross.vue";
-import Pill from "../components/atoms/Pill.vue";
+import defaultCarImage from '../assets/Car-Img.png';
+// import * as icons from '@icons'
 
 export default {
   props: ["id"],
@@ -52,7 +42,7 @@ export default {
         id: null,
         email: null,
       },
-      currentImage: null, // Nueva propiedad para la imagen principal
+      currentImage: null,
     };
   },
   async created() {
@@ -60,15 +50,9 @@ export default {
     this.loading = true;
     try {
       const carId = this.id;
-      const carDoc = doc(db, "cars", carId);
-      const carSnapshot = await getDoc(carDoc);
-      if (carSnapshot.exists()) {
-        this.car = { id: carSnapshot.id, ...carSnapshot.data() };
-        this.currentImage = this.car.images && this.car.images.length > 0 ? this.car.images[0] : defaultCarImage;
-        await this.checkIfRented();
-      } else {
-        this.errorMsg = "Auto no encontrado.";
-      }
+      this.car = await getCarById(carId);
+      this.currentImage = this.car.images && this.car.images.length > 0 ? this.car.images[0] : defaultCarImage;
+      this.rented = await checkIfCarIsRented(this.car.id);
     } catch (error) {
       this.errorMsg = "Hubo un error al obtener los detalles del auto. Volvé a intentar";
       console.error("Error al obtener los detalles del auto:", error);
@@ -76,33 +60,14 @@ export default {
     this.loading = false;
   },
   methods: {
-    async checkIfRented() {
-      if (!this.car || !this.car.id) return;
-
-      try {
-        const rentalQuery = query(
-          collection(db, "rental_requests"),
-          where("car_id", "==", this.car.id)
-        );
-        const querySnapshot = await getDocs(rentalQuery);
-
-        this.rented = !querySnapshot.empty && querySnapshot.docs[0].data().rented;
-        console.log("Estado de alquiler:", this.rented);
-      } catch (error) {
-        console.error("Error al verificar si el auto está alquilado:", error);
-      }
-    },
-
     openModal() {
       this.$refs.ModalRent.open();
     },
-
     setCurrentImage(image) {
-      this.currentImage = image; // Cambia la imagen principal al hacer clic en una miniatura
+      this.currentImage = image;
     },
-
     setDefaultImage(event) {
-      event.target.src = defaultCarImage; // Imagen de respaldo en caso de error
+      event.target.src = defaultCarImage;
     },
   },
   mounted() {
@@ -112,6 +77,7 @@ export default {
   },
 };
 </script>
+
 
 <template>
   <div
@@ -175,10 +141,10 @@ export default {
               <button
                 type="button"
                 class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm mb-3 px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                v-if="!rented && car.user_id !== loggedUser?.id"
+                v-if="!rented && car.user_id !== loggedUser?.id && car.isAvailable"
                 @click="openModal"
               >
-                <span class="hidden md:block">Alquilar</span>
+                <span>Alquilar</span>
                 <svg
                   class="rtl:rotate-180 w-3.5 h-3.5 ms-2"
                   aria-hidden="true"
@@ -195,6 +161,7 @@ export default {
                   />
                 </svg>
               </button>
+              <span class="bg-yellow-100 text-yellow-800 text-base font-medium me-2 px-2.5 py-0.5 rounded border border-yellow-400" v-if="!car.isAvailable">El auto fue deshabilitado temporalmente</span>
             </div>
 
             <p class="mb-3 text-gray-500 break-words">

@@ -43,7 +43,7 @@ export default {
 <template>
   <Navbar :user="loggedUser" @logout="handleLogout" />
 
-  <main class="flex flex-col min-h-screen pt-20 mx-auto">
+  <main class="flex flex-col min-h-screen mt-20 mx-auto">
     <router-view />
   </main>
   <Alert />

@@ -1,8 +1,8 @@
 <script>
-import { editMyProfilePhoto } from '../services/auth'
-import { addAlert } from '../services/alerts';
+import { editMyProfilePhoto } from '../../services/auth';
+import { addAlert } from '../../services/alerts';
 
-import AddImg from '../icons/addImg.vue';
+import AddImg from '@icons/addImg.vue';
 
 export default {
   name: "EditPhotoModal",

@@ -1,5 +1,5 @@
 <script>
-import UserEdit from "./organisms/UserEdit.vue";
+import UserEdit from "./UserEdit.vue";
 
 export default {
   name: "User",
@@ -20,7 +20,7 @@ export default {
 
 <template>
   <div
-    class="max-w-md w-96 mx-auto p-4 sm:px-8 sm:py-4 flex rounded-xl items-center bg-blue-100"
+    class="max-w-md w-96 p-4 sm:px-8 sm:py-4 flex rounded-xl items-center bg-blue-100"
   >
     <div class="flex-shrink-0">
       <img
@@ -29,7 +29,6 @@ export default {
         :src="`${user.photoURL}`"
         :alt="`Perfil de ${user.userName}`"
       />
-      <!-- <img v-else :src="`https://unavatar.io/${user.userName}`" alt="Foto de perfil inexistente"> -->
     </div>
     <div class="flex-1 min-w-0 ms-4">
       <h2 class="text-lg font-semibold text-gray-900 truncate">

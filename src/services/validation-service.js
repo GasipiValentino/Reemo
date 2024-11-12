@@ -16,8 +16,8 @@ export function validateStep1(newCar, errors) {
     // Validación para "modelo" con los respectivos mensajes de cada erorr
     if (!newCar.modelo) {
       errors.modelo = "El campo modelo no puede estar vacío";
-    } else if (newCar.modelo.length < 3) {
-      errors.modelo = "El modelo debe tener al menos 3 letras";
+    } else if (newCar.modelo.length < 2) {
+      errors.modelo = "El modelo debe tener al menos 2 letras";
     } else {
       errors.modelo = null;
     }
@@ -143,10 +143,10 @@ export function validateStep1(newCar, errors) {
 
     if (!newCar.precio) {
       errors.precio = "El campo precio no puede estar vacío";
-    } else if (newCar.precio < 1000) {
-      errors.precio = "El precio por hora no puede ser menor a $1000";
-    } else if (newCar.precio > 15000) {
-      errors.precio = "El precio por hora no puede ser mayor a $15000";
+    } else if (newCar.precio < 20000) {
+      errors.precio = "El precio por día no puede ser menor a $20000";
+    } else if (newCar.precio > 100000) {
+      errors.precio = "El precio por día no puede ser mayor a $100000";
     } else if (isNaN(newCar.precio)) {
       errors.precio = "El campo precio debe ser un número";
     } 
@@ -158,9 +158,10 @@ export function validateStep1(newCar, errors) {
   };
 
   export function validateStep4(selectedFiles, errors) {
-    if (selectedFiles.length < 4) {
-      errors.photos = "El auto no puede tener más de 7 asientos";
-      return false;
+    const validFiles = selectedFiles.filter(file => file !== null);
+    if (validFiles.length < 4) {
+        errors.photos = "Debes subir 4 fotos del vehículo";
+        return false;
     }
     errors.photos = null;
     return true;

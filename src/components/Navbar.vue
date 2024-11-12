@@ -1,15 +1,22 @@
 <script>
 import Logout from "../icons/Logout.vue";
 import Login from "../icons/Login.vue";
+import Reemo from '@icons/Reemo.vue';
+import AlertRented from './rental/AlertRented.vue'
 
 export default {
   name: "Navbar",
-  components: { Logout, Login },
+  components: { Logout, Login, Reemo, AlertRented },
   props: {
     user: {
       type: Object,
       required: true,
     },
+  },
+  data(){
+    return{
+      rentalRequest: null,
+    }
   },
   methods: {
     handleLogout() {
@@ -21,22 +28,18 @@ export default {
 
 <template>
   <nav class="fixed top-0 z-10 left-0 right-0 bg-zinc-900 border-gray-200">
-    <div
-      class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4"
-    >
-      <router-link
-        to="/"
-        class="flex items-center space-x-3 rtl:space-x-reverse"
-      >
+    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+      <router-link to="/" class="flex items-center space-x-3 rtl:space-x-reverse">
         <!-- <img src="" class="h-8" alt="Reemo Logo" /> -->
-        <span
-          class="self-center text-white text-2xl font-semibold whitespace-nowrap"
-          >Reemo</span
-        >
+        <span class="self-center text-white text-2xl font-semibold whitespace-nowrap"><Reemo /></span>
       </router-link>
 
       <!-- (Login/Logout) -->
       <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+
+        <!-- Notificaciones de alquiler -->
+        <AlertRented v-if="user && user.id"/>
+
         <template v-if="user.id == null">
           <router-link
             to="/Login"
@@ -100,7 +103,7 @@ export default {
               aria-current="page"
               active-class="!text-blue-300 bg-blue-700"
             >
-              Home
+              Inicio
             </router-link>
           </li>
           <li>
@@ -110,7 +113,7 @@ export default {
               aria-current="page"
               active-class="!text-blue-300 bg-blue-700"
             >
-              Publicaciones
+              Encontrar un auto
             </router-link>
           </li>
           <template v-if="user.id !== null">
@@ -120,7 +123,7 @@ export default {
                 class="block py-2 px-3 md:p-0 rounded md:bg-transparent md:text-white hover:text-zinc-300"
                 active-class="!text-blue-300 bg-blue-700"
               >
-                Perfil
+                Mi perfil
               </router-link>
             </li>
           </template>

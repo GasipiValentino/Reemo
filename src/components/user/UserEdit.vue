@@ -1,12 +1,14 @@
 <script>
-import { editMyProfile, subscribeToAuthState } from "../../services/auth.js";
-import { addAlert } from "../../services/alerts.js";
+import { editMyProfile, subscribeToAuthState } from "@services/auth.js";
+import { addAlert } from "@services/alerts.js";
 
 import Heading from "../atoms/Heading.vue";
-import AddImg from "../../icons/addImg.vue";
-import EditPhotoModal from "../EditPhotoModal.vue";
+import AddImg from "@icons/addImg.vue";
+import EditPhotoModal from "./EditPhotoModal.vue";
 import Alert from "../atoms/Alert.vue"
 import ConfirmModal from "../molecules/Confirm.vue";
+
+// import * as icons from '@icons'
 
 let unsubscribeAuth = () => {};
 
@@ -110,7 +112,7 @@ export default {
       photoPreview: userData.photoURL || '',
       photo: null,
     });
-    this.initialData = { ...this.editData }; // Guarda datos originales de usuario
+    this.initialData = { ...this.editData }; 
   },
   unmounted() {
     unsubscribeAuth();
@@ -121,7 +123,7 @@ export default {
   <div 
     v-if="isVisible" 
     @mousedown.self="confirmCloseUserEdit"
-    class="modal-overlay" 
+    class="modal-overlay z-50" 
     :class="{ 'overflow-hidden': isVisible }"
     >
     <ConfirmModal
@@ -146,15 +148,13 @@ export default {
       <button type="button" @click="confirmCloseUserEdit">Cerrar</button>
       <Heading :type="2">Editar perfil</Heading>
       <button
-          type="submit"
-          class="transition-all py-2 px-4 rounded bg-blue-700 text-white focus:bg-blue-500 hover:bg-blue-500 active:bg-blue-900"
+        type="submit"
+        class="transition-all py-2 px-4 rounded bg-blue-700 text-white focus:bg-blue-500 hover:bg-blue-500 active:bg-blue-900"
       >
-      {{  !editing ? 'Guardar' : 'Guardando...' }}
-    </button>
+        {{  !editing ? 'Guardar' : 'Guardando...' }}
+      </button>
     </div>
-<!--     <Alert v-if="errorMessage" severity="error">
-      {{ errorMessage }}
-    </Alert> -->
+
     <div class="relative">
       <figure class="flex items-center justify-center w-full mb-5">          
         <img 
