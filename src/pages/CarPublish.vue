@@ -4,7 +4,7 @@ import Heading from "../components/atoms/Heading.vue";
 
 import { subscribeToAuthState } from '../services/auth.js';
 import { saveCars, subscribeToNewPublication } from '../services/publication.js'
-import { validateStep1, validateStep2, validateStep3, validateStep4 } from '../services/validation-service.js';
+import { validateStep1, validateStep2, validateStep3, validateStep4 } from '../services/validation-service.js'
 
 
 let unsubscribeAuth = () => { };
@@ -120,6 +120,10 @@ export default {
       this.step -= 1;
     },
 
+    getProgressPercentage() {
+      return (this.step / 4) * 100;
+    },
+
     handleFileSelection(index, event) {
       const file = event.target.files[0];
       if (file) {
@@ -129,7 +133,7 @@ export default {
     },
 
   async handleSubmit() {
-  // Nos aseguramos de la validación de todos los datos antes de enviar el formulario
+  // PAra que nos aseguremos de la validación de todos los datos antes de enviar el formulario
   if (this.step === 1 && !this.validateStep1()) return;
   if (this.step === 2 && !this.validateStep2()) return;
   if (this.step === 3 && !this.validateStep3()) return;
@@ -196,6 +200,12 @@ export default {
 
   <form action="#" @submit.prevent="handleSubmit" class="max-w-md w-96 m-auto my-4 ">
     <Heading :type="1">Registrar vehículo</Heading>
+    <div class="mb-8">
+      <div class="progress-bar">
+      <div class="progress-bar-fill" :style="{ width: getProgressPercentage() + '%' }"></div>
+    </div>
+    <span>{{ this.step }}/4</span>
+    </div>
 
     <section v-if="step === 1">
       <div class="relative w-full group mb-10">
@@ -285,7 +295,7 @@ export default {
           :class="['block w-full py-2.5 px-0  text-gray-500 bg-transparent border-2 focus:outline-none focus:ring-0 peer ps-3 rounded-md',
             errors.combustible ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-blue-600'
           ]">
-          <option class="p-4" value="" disabled selected>Combustible</option>
+          <option class="p-4" value="" disabled>Combustible</option>
           <option class="p-4">Nafta</option>
           <option class="p-4">Gasoil</option>
           <option class="p-4">GNC</option>
@@ -314,8 +324,8 @@ export default {
             errors.transmision ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-blue-600'
           ]">
           >
-          <option class="text-gray-300 ps-8" value="" disabled selected>Transmisión</option>
-          <option class="ps-8" value="Manual" selected>Manual</option>
+          <option class="text-gray-300 ps-8" value="" disabled>Transmisión</option>
+          <option class="ps-8" value="Manual">Manual</option>
           <option class="ps-8" value="Automático">Automático</option>
         </select>
         <!-- Parrafo para mostrar el mensaje de error -->
@@ -477,9 +487,25 @@ export default {
 </template>
 
 <style scoped>
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: .3rem;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: #020041;
+  transition: width 0.3s ease; 
+}
+
+
 .custom-file-upload {
   display: block;
-  width: 70%;
+  width: 100%;
   padding: 10px;
   background-color: #f7f7f7;
   border: 1px solid #ccc;

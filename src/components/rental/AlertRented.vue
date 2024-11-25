@@ -2,7 +2,7 @@
 <script>
 import { db } from '../../services/firebase.js';
 import { subscribeToAuthState } from "../../services/auth.js";
-import { updateRentalStatus, fetchRentalRequests } from '../../services/rentedCarService.js'
+import { updateRentalStatus, fetchRentalRequests } from '../../services/rentedCarService.js';
 
 let unsubscribeAuth = () => { };
 
@@ -56,8 +56,8 @@ export default {
     unsubscribeAuth = subscribeToAuthState((newUserData) => {
       // console.log('Datos del usuario:', newUserData);
       this.loggedUser = newUserData;
-      if (this.loggedUser.id) {
-        this.fetchRentalRequests(); // Llamada a la función para obtener solicitudes
+      if (this.loggedUser && this.loggedUser.id) {
+        this.fetchRentalRequests(this.loggedUser.id); // Llamada a la función para obtener solicitudes
 
       }
     });

@@ -26,3 +26,7 @@ dist-ssr
 
 # Ignorar firebase
 src/services/firebase.js
+# Ignorar reglas 
+reglas-firestore.txt
+reglas-storage.txt
+datos.md

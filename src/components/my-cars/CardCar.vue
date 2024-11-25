@@ -104,7 +104,7 @@ async handleToggleAvailability(carId) {
     <div class="flex flex-1 flex-col justify-between p-2">
       <article class="flex align-end justify-between">
         <Heading :type="3">{{ car.marca }} {{ car.modelo }}</Heading>
-        <p class="text-md text-2xl font-extrabold leading-tight text-gray-900">${{ car.precio }} /día</p>
+        <p class="text-md text-xl font-extrabold leading-tight text-gray-900">${{ car.precio }} /día</p>
       </article>
 
       <ul class="flex mt-2 items-center gap-4">

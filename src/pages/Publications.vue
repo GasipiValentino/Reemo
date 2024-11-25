@@ -47,9 +47,10 @@ export default {
   mounted() {
     subscribeToAuthState((newUserData) => {
       this.loggedUser = newUserData;
-      if (this.loggedUser.id) {
-        this.fetchCars();
-      }
+      // if (this.loggedUser.id) {
+      //   this.fetchCars();
+      // }
+      this.fetchCars();
     });
 
     subscribeToNewPublication((newCars) => {

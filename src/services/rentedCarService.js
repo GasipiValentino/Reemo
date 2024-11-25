@@ -134,9 +134,12 @@ export function notifyOwner(owner_id, rentalRequest){
 export async function fetchRentalRequests(userId){
   try {
 
-    const rentalRequestCollection = collection(db, 'rental_requests');
-    // const rentalRequestSnapshot = await getDocs(rentalRequestCollection);
+    if (!userId){
+      console.warn("El userId es invalido o no esta definido");
+      return [];
+    }
 
+    const rentalRequestCollection = collection(db, 'rental_requests');
     const q =  query(
       rentalRequestCollection,
       where("owner_id", "==", userId),
@@ -145,16 +148,9 @@ export async function fetchRentalRequests(userId){
 
     // Obtener las solicitudes de alquiler filtradas por owner_id y status pendiente
     const rentalRequestSnapshot = await getDocs(q);
-    const rentalRequests = rentalRequestSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-
-    // const rentalRequests = rentalRequestSnapshot.docs
-    //   .filter(request => request.owner_id === userId && request.status === 'pendiente');
-      // .map(doc => ({ id: doc.id, ...doc.data() }))
-
-    // console.log("Imagen del vehiculo:", this.pendingRequests[0].owner_id);
-
-    // Obtenemos la informacion del usuario que alquila para obtener su foto de perfil
+    const rentalRequests = rentalRequestSnapshot.docs
+    .map(doc => ({ id: doc.id, ...doc.data() }))
+    // .filter(request => request.status === "pendiente");
 
     const requestWithOwner = await Promise.all(
       rentalRequests.map( async request =>{
@@ -179,21 +175,6 @@ export async function fetchRentalRequests(userId){
     );
 
     return requestWithOwner;
-
-    // const userPromises = this.pendingRequests.map( async request =>{
-    //     const userRef = doc(db, 'users', request.owner_id);
-    //     const userSnap = await getDoc(userRef)
-
-    //     if(userSnap.exists()){
-    //         const userData = userSnap.data();
-    //         return{...request, photoURL: userData.photoURL}
-    //     }else{
-    //         console.warn(`Usuario con ID ${request.owner_id} no encontrado`);
-    //         return request; // Devolver sin photoURL si no existe
-    //     }
-
-    // });
-    // this.pendingRequests = await Promise.all(userPromises);
 
   } catch (error) {
     console.error("Error al obtener las solicitudes de alquiler:", error)

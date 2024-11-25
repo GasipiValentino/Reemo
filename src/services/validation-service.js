@@ -54,8 +54,8 @@ export function validateStep1(newCar, errors) {
 
     if (!newCar.description) {
       errors.description = "El campo descripción no puede estar vacío";
-    } else if (newCar.description.length < 80) {
-      errors.description = "La descripción debe tener al menos 80 letras";
+    } else if (newCar.description.length < 20) {
+      errors.description = "La descripción debe tener al menos 20 letras";
     } else if (newCar.description.length > 300) {
       errors.description = "La descripción no puede tener más de 300 letras";
     } else {

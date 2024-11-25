@@ -106,7 +106,7 @@ export async function unsubscribeToPublication(idPublication) {
       await deleteObject(fotoRef);
     }
 
-    // Eliminar el documento de la publicación en Firestore
+    // Eliminar el documento de la publicaciónm en Firestore
     await deleteDoc(publicationRef);
 
     console.log('Publicación y fotos eliminadas correctamente.');
@@ -119,7 +119,7 @@ export async function unsubscribeToPublication(idPublication) {
 
 export async function deleteCar(id) {
   try {
-    const response = await unsubscribeToPublication(id); // Asegúrate de que unsubscribeToPublication esté importado correctamente
+    const response = await unsubscribeToPublication(id); 
     return response.success 
       ? { success: true, message: 'Publicación eliminada' } 
       : { success: false, message: response.message };
