@@ -18,26 +18,23 @@ export default {
     await this.fetchRentalRequests();
   },
   methods: {
-    fetchRentalRequests() {
 
-      const request = fetchRentalRequests(this.loggedUser.id, (requests) => {
+    async fetchRentalRequests() {
 
-        this.pendingRequests = requests.filter(request => request.status === 'pendiente');
-        console.log('Solicitudes pendientes actualizadas:', this.pendingRequests);
-      })
-      
-
-      // try {
-      //   const requests = await fetchRentalRequests(this.loggedUser.id);
-
-      //   this.pendingRequests = requests.filter(request => request.status === 'pendiente')
-      //   console.log('solicitudes pendientes:', this.pendingRequests)
-
-      // } catch (error) {
-      //   console.error("Error al obtener las solicitudes de alquiler:", error);
-      // }
+    try {
+      const requests = await fetchRentalRequests(this.loggedUser.id);
+      // console.log("solicitudes completas:", requests);
+    
+      this.pendingRequests = requests.filter(request => request.status === 'pendiente')
+      console.log('solicitudes pendientes:', this.pendingRequests)
+    
+    } catch (error) {
+      console.error("Error al obtener las solicitudes de alquiler:", error);
+    }
 
     },
+
+
 
     async acceptRequest(reqId) {
       await updateRentalStatus(reqId, 'aceptado')

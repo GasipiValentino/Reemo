@@ -113,82 +113,52 @@ export function notifyOwner(owner_id, rentalRequest){
 }
 
 
-export async function fetchRentalRequests(userId, callback) {
+export async function fetchRentalRequests(userId){
   try {
-    if (!userId) {
-      console.warn("El userId es inválido o no está definido");
-      return;
+
+    if (!userId){
+      console.warn("El userId es invalido o no esta definido");
+      return [];
     }
 
-    // Consulta en Firestore
     const rentalRequestCollection = collection(db, 'rental_requests');
-    const q = query(
+    const q =  query(
       rentalRequestCollection,
       where("owner_id", "==", userId),
       where("status", "==", "pendiente")
     );
 
-    onSnapshot(q, async (snapshot) => {
-      try {
-        const rentalRequests = await Promise.all(
-          snapshot.docs.map(async (docSnap) => {
-            const request = { id: docSnap.id, ...docSnap.data() };
+    const rentalRequestSnapshot = await getDocs(q);
+    const rentalRequests = rentalRequestSnapshot.docs
+    .map(doc => ({ id: doc.id, ...doc.data() }))
+    // .filter(request => request.status === "pendiente");
 
+    const requestWithOwner = await Promise.all(
+      rentalRequests.map( async request =>{
+        const userRef = doc(db, 'users', request.user_id);
+        const userSnap = await getDoc(userRef);
 
-            const userRef = doc(db, 'users', request.user_id);
-            const userSnap = await getDoc(userRef);
+        // verificamos si existe el usuario en el documento
+        if(userSnap.exists()){
+          const userData = userSnap.data();
+          console.log('datos del usuario que alquila', userData)
+          return{
+            ...request,
+            photoURL: userData.photoURL || null,
+            name: userData.name || null
+          }
+        }else{
+          console.error(`el Usuario con Id ${request.user_id} no fue encontrado`)
+          return request;
+        }
 
-            if (userSnap.exists()) {
-              const userData = userSnap.data();
-              return {
-                ...request,
-                photoURL: userData.photoURL || null,
-                name: userData.name || null,
-              };
-            } else {
-              console.error(`El usuario con ID ${request.user_id} no fue encontrado`);
-              return request;
-            }
-          })
-        );
+      } )
+    );
 
-        callback(rentalRequests);
-      } catch (error) {
-        console.error("Error procesando las solicitudes de alquiler:", error);
-      }
-    });
+    return requestWithOwner;
+
   } catch (error) {
-    console.error("Error al obtener las solicitudes de alquiler:", error);
+    console.error("Error al obtener las solicitudes de alquiler:", error)
   }
 }
-
     
-
-//     // const requestWithOwner = await Promise.all(
-//     //   rentalRequests.map( async request =>{
-//     //     const userRef = doc(db, 'users', request.user_id);
-//     //     const userSnap = await getDoc(userRef);
-
-//     //     // verificamos si existe el usuario en el documento
-//     //     if(userSnap.exists()){
-//     //       const userData = userSnap.data();
-//     //       console.log('datos del usuario que alquila', userData)
-//     //       return{
-//     //         ...request,
-//     //         photoURL: userData.photoURL || null,
-//     //         name: userData.name || null
-//     //       }
-//     //     }else{
-//     //       console.error(`el Usuario con Id ${request.user_id} no fue encontrado`)
-//     //       return request;
-//     //     }
-
-//     //   } )
-//     // );
-
-//     // return requestWithOwner;
-
-//   } catch (error) {
-//     console.error("Error al obtener las solicitudes de alquiler:", error)
-//   }
-// }
