@@ -8,10 +8,10 @@ export default {
   data() {
     return {
       isVisible: false,
-      rentedFromDate: "", 
+      rentedFromDate: "",
       rentedUntilDate: "",
-      selectedTime: '00:00', 
-      selectedUntilTime: '00:00', 
+      selectedTime: '00:00',
+      selectedUntilTime: '00:00',
       timeOption: [],
     };
   },
@@ -25,8 +25,8 @@ export default {
       this.rentedUntilDate = "";
     },
     async submitRental() {
-      
-      if ( !this.car || !this.loggedUser || !this.rentedFromDate || !this.rentedUntilDate ) {
+
+      if (!this.car || !this.loggedUser || !this.rentedFromDate || !this.rentedUntilDate) {
         addAlert("Por favor, completa todos los campos.", "error");
         return;
       }
@@ -46,9 +46,9 @@ export default {
           user_id: this.loggedUser.id,
           rented_from: this.rentedFromDate, // Fecha de Busqueda del vehiculo
           rented_until: this.rentedUntilDate, // Fecha de devolucion del vehiculo
-          selectedTime: this.selectedTime || '00:00', 
-          selectedUntilTime: this.selectedUntilTime || '00:00', 
-          status: "pendiente", 
+          selectedTime: this.selectedTime || '00:00',
+          selectedUntilTime: this.selectedUntilTime || '00:00',
+          status: "pendiente",
           rental_price: this.car.precio || null, // Precio calculado
         };
 
@@ -64,17 +64,17 @@ export default {
 
       this.$router.push('/Profile')
     },
-    timeOptions(){
-      for (let hour = 0; hour < 24; hour++){ 
-        for (let minute = 0; minute < 60; minute += 30){
-            const formattedHour = hour < 10 ? '0' + hour : hour;
-            const formattedMinute = minute < 10 ? '0' + minute : minute;
-            this.timeOption.push(`${formattedHour}:${formattedMinute}`)
-         }
+    timeOptions() {
+      for (let hour = 0; hour < 24; hour++) {
+        for (let minute = 0; minute < 60; minute += 30) {
+          const formattedHour = hour < 10 ? '0' + hour : hour;
+          const formattedMinute = minute < 10 ? '0' + minute : minute;
+          this.timeOption.push(`${formattedHour}:${formattedMinute}`)
+        }
       }
     }
   },
-  mounted(){
+  mounted() {
     this.timeOptions();
   }
 };

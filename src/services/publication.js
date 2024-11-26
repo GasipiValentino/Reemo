@@ -55,7 +55,7 @@ export async function saveCars({ user_id, email, marca, modelo, año, chasis, mo
   }
 }
 
-export function subscribeToNewPublication(callback){
+export function subscribeToNewPublication(callback) {
   const carsRef = collection(db, 'cars');
   const q = query(carsRef, orderBy('created_at'));
 

@@ -1,5 +1,5 @@
 <script>
-import { getAvailableCars, addCar } from "../services/car-service.js"; 
+import { getAvailableCars, addCar } from "../services/car-service.js";
 import { subscribeToAuthState } from "../services/auth.js";
 import { subscribeToNewPublication } from "../services/publication.js";
 
@@ -47,9 +47,6 @@ export default {
   mounted() {
     subscribeToAuthState((newUserData) => {
       this.loggedUser = newUserData;
-      // if (this.loggedUser.id) {
-      //   this.fetchCars();
-      // }
       this.fetchCars();
     });
 
@@ -62,45 +59,35 @@ export default {
 
 <template>
   <section>
-  <Heading :type="1" class="m-6">Alquila autos por tu zona</Heading>
+    <Heading :type="1" class="m-6 text-center">Alquilá autos por tu zona</Heading>
 
-  <div
-    v-if="loading"
-    class="flex items-center justify-center w-fit mx-auto bg-gray-50"
-  >
-    <Loading role="status"/>
-    <span class="sr-only">Cargando...</span>
-  </div>
-
-  <div class="max-w-md mx-auto md:max-w-screen-xl m-4 grid justify-items-center gap-4 md:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4">
-    <div
-      v-for="(car, index) in cars"
-      :key="index"
-      class="rounded-2xl shadow-md relative flex relative flex-col shadow-sm w-full overflow-hidden hover:bg-primary-300"
-      >
-      <!-- El error es este @rentCar="rentCar(car)" -->
-      <CardCar :car="car"/>
+    <div v-if="loading" class="flex items-center justify-center w-fit mx-auto bg-gray-50">
+      <Loading role="status" />
+      <span class="sr-only">Cargando...</span>
     </div>
-  </div>
 
-  <template v-if="loggedUser.id == null">
-    <router-link
-      to="/Login"
-      class="fixed gap-4 md:flex z-50 items-center justify-center bottom-0 right-0 m-8 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full md:rounded-lg text-md px-2 md:px-4 py-2 text-center"
-    >
-      <span class="hidden md:block">Publicar Vehículo</span>
-      <AddIcon />
-    </router-link>
-  </template>
-  
-  <template v-else>
-    <router-link
-      to="/Publish"
-      class="fixed gap-4 md:flex z-50 items-center justify-center bottom-0 right-0 m-8 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full md:rounded-lg text-md px-2 md:px-4 py-2 text-center"
-    >
-      <span class="hidden md:block">Publicar Vehículo</span>
-      <AddIcon />
-    </router-link>
-  </template>
-</section>
+    <div
+      class="max-w-md mx-auto md:max-w-screen-xl m-4 grid justify-items-center gap-4 md:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4">
+      <div v-for="(car, index) in cars" :key="index"
+        class="rounded-2xl shadow-md relative flex relative flex-col shadow-sm w-full overflow-hidden hover:bg-primary-300">
+        <CardCar :car="car" />
+      </div>
+    </div>
+
+    <template v-if="loggedUser.id == null">
+      <router-link to="/Login"
+        class="fixed gap-4 md:flex z-50 items-center justify-center bottom-0 right-0 m-8 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full md:rounded-lg text-md px-2 md:px-4 py-2 text-center">
+        <span class="hidden md:block">Publicar Vehículo</span>
+        <AddIcon />
+      </router-link>
+    </template>
+
+    <template v-else>
+      <router-link to="/Publish"
+        class="fixed gap-4 md:flex z-50 items-center justify-center bottom-0 right-0 m-8 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full md:rounded-lg text-md px-2 md:px-4 py-2 text-center">
+        <span class="hidden md:block">Publicar Vehículo</span>
+        <AddIcon />
+      </router-link>
+    </template>
+  </section>
 </template>

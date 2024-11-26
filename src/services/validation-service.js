@@ -160,7 +160,7 @@ export function validateStep1(newCar, errors) {
   export function validateStep4(selectedFiles, errors) {
     const validFiles = selectedFiles.filter(file => file !== null);
     if (validFiles.length < 4) {
-        errors.photos = "Debes subir 4 fotos del vehículo";
+        errors.photos = "Debés subir 4 fotos del vehículo";
         return false;
     }
     errors.photos = null;

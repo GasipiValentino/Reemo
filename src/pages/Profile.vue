@@ -1,5 +1,5 @@
 <script>
-import { getUserCars } from "@services/car-service.js"; 
+import { getUserCars } from "@services/car-service.js";
 import { subscribeToAuthState } from "@services/auth.js";
 import { fetchRentedCars } from "@services/rentedCarService.js";
 
@@ -9,7 +9,7 @@ import User from "@components/user/User.vue";
 import RentedCar from "@components/rental/RentedCar.vue";
 import Loading from "@icons/Loading.vue";
 
-let unsubscribeAuth = () => {};
+let unsubscribeAuth = () => { };
 
 export default {
   name: "MyProfile",
@@ -32,7 +32,7 @@ export default {
     async loadRentedCars() {
       try {
         this.loading = true;
-        
+
         this.rentedCars = await fetchRentedCars(this.loggedUser.id)
         console.log("Autos alquilados: ", this.rentedCars);
 
@@ -61,7 +61,7 @@ export default {
         });
       }
       if (newUserData && newUserData.id) {
-        if(newUserData && newUserData.id && this.internalUserId !== newUserData.id){
+        if (newUserData && newUserData.id && this.internalUserId !== newUserData.id) {
           this.internalUserId = newUserData.id;
           this.loadRentedCars();
         }
@@ -91,14 +91,9 @@ export default {
     <User :user="loggedUser" />
     <div>
       <Heading :type="2">Autos alquilados</Heading>
-      <div
-        v-for="rental in rentedCars"
-        :key="index"
-        class="p-4 rounded-2xl shadow-md relative flex flex-row shadow-sm w-full overflow-hidden hover:bg-primary-300"
-      >
-        <RentedCar
-          :key="rental.id" 
-          :car="rental.car" />
+      <div v-for="rental in rentedCars" :key="index"
+        class="p-4 rounded-2xl shadow-md relative flex flex-row shadow-sm w-full overflow-hidden hover:bg-primary-300">
+        <RentedCar :key="rental.id" :car="rental.car" />
       </div>
     </div>
   </div>
@@ -106,27 +101,20 @@ export default {
     <Heading :type="2">Mis autos</Heading>
   </div>
 
-  <div
-    v-if="loading"
-    class="flex items-center justify-center w-fit mx-auto bg-gray-50"
-  >
-    <Loading role="status"/>
+  <div v-if="loading" class="flex items-center justify-center w-fit mx-auto bg-gray-50">
+    <Loading role="status" />
 
     <span class="sr-only">Cargando...</span>
   </div>
 
   <div class="max-w-md mx-auto md:max-w-screen-xl mb-4 grid gap-4 md:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4">
-    <div
-      v-for="(car, index) in cars"
-      :key="index"
-      class="rounded-2xl shadow-md relative flex relative flex-col shadow-sm overflow-hidden hover:bg-primary-300"
-    >
+    <div v-for="(car, index) in cars" :key="index"
+      class="rounded-2xl shadow-md relative flex relative flex-col shadow-sm overflow-hidden hover:bg-primary-300">
       <CardCar :car="car" />
     </div>
-    <router-link
-      to="/Publish"
-      class="flex flex-col justify-center items-center text-gray-300 border-4 border-gray-200 hover:text-gray-400 hover:border-gray-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center"
-      >Registrar Vehículo
+    <router-link to="/Publish"
+      class="flex flex-col justify-center items-center text-gray-300 border-4 border-gray-200 hover:text-gray-400 hover:border-gray-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center">Registrar
+      Vehículo
       <span class="text-3xl font-bold">+</span>
     </router-link>
   </div>

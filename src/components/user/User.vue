@@ -19,16 +19,10 @@ export default {
 </script>
 
 <template>
-  <div
-    class="max-w-md w-96 p-4 sm:px-8 sm:py-4 flex rounded-xl items-center bg-blue-100"
-  >
+  <div class="max-w-md w-96 p-4 sm:px-8 sm:py-4 flex rounded-xl items-center bg-blue-100">
     <div class="flex-shrink-0">
-      <img
-        v-if="user.photoURL"
-        class="w-8 h-8 rounded-full"
-        :src="`${user.photoURL}`"
-        :alt="`Perfil de ${user.userName}`"
-      />
+      <img v-if="user.photoURL" class="w-8 h-8 rounded-full" :src="`${user.photoURL}`"
+        :alt="`Perfil de ${user.userName}`" />
     </div>
     <div class="flex-1 min-w-0 ms-4">
       <h2 class="text-lg font-semibold text-gray-900 truncate">
