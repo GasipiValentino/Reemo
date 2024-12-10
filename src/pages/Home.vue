@@ -1,102 +1,272 @@
 <script>
 import Heading from "../components/atoms/Heading.vue";
 import Pill from '../components/atoms/Pill.vue';
-import GooglePlay from "../components/atoms/GooglePlay.vue";
-import AppStore from "../components/atoms/AppStore.vue";
+import ZurichxReemo from "../components/atoms/ZurichxReemo.vue";
+import ABS from "../icons/ABS.vue";
+import LongArrow from "../icons/LongArrow.vue";
+import PublishYourCar from "../components/atoms/PublishYourCar.vue";
+import RentYourCar from "../components/atoms/RentYourCar.vue"
+import NotificationExpress from "../components/atoms/NotificationExpress.vue";
+import RentsExpress from "../components/organisms/RentsExpress.vue";
+import Income from "../components/atoms/Income.vue";
+import Moments from "../components/atoms/Moments.vue";
+import ConectingCars from "../components/atoms/ConectingCars.vue";
+import GooglePlayLg from "../components/atoms/GooglePlayLg.vue";
+import AppStoreLg from "../components/atoms/AppStoreLg.vue";
+import Brands from "../components/atoms/Brands.vue";
+import Replay from "../components/atoms/Replay.vue";
+import Search from "../components/atoms/Search.vue";
+import Dropdown from "../components/molecules/Dropdown.vue";
+import Experience from "../components/atoms/Experience.vue";
+import QR from "../components/atoms/QR.vue";
+import InfoSm from "../icons/InfoSm.vue";
 
 export default {
   name: "Home",
-  components: { Heading, Pill, GooglePlay, AppStore },
+  components: { Heading, Pill, GooglePlayLg, AppStoreLg, ZurichxReemo, ABS, LongArrow, PublishYourCar, RentYourCar, NotificationExpress, RentsExpress, Income, Moments, ConectingCars, Brands, Replay, Search, Dropdown, Experience, QR, InfoSm },
 };
 </script>
 
 <template>
-  <section class="flex items-center mx-auto min-h-96 gap-x-8 flex-wrap max-w-5xl mt-6 px-4 mt-20">
-    <div class="order-1 md:order-2 max-w-md mx-auto mb-6">
-      <video src="../assets/Home.mp4" autoplay loop muted preload="auto"></video>
-    </div>
-    <div class="mx-auto max-w-lg order-2 md:order-1 mb-6">
-      <Heading :type="1" class="sm:text-5xl">¡Bienvenidos a <b class="text-primary-900">Reemo!</b></Heading>
-      <p class="text-center lg:text-left">
-        Con Reemo tenés la posibilidad de ganar dinero alquilando tu propio
-        auto, o también podés solicitar su tenencia por un tiempo específico por
-        un precio accesible
-        <span class="font-bold mb-8">¡Generá ingresos o movete libremente!</span>
-      </p>
-      <a href="/#Publications"
-        class="block mt-8 mb-8 text-secondary-900 hover:text-white border border-secondary-900 hover:bg-secondary-900 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Ver
-        Autos</a>
-      <div class="flex gap-2">
-        <GooglePlay />
-        <AppStore />
+  <div class="w-11/12 sm:w-10/12 m-auto flex flex-col gap-32 mb-32">
+    <section class="flex flex-col items-center justify-center sm:flex-row">
+      <div class="flex flex-col gap-4">
+        <Heading :type="1" class="w-[95%] sm:w-full text-pretty text-center sm:text-start"><b>Conectando autos,</b> impulsando oportunidades</Heading>
+        <div class="sm:flex gap-2 hidden">
+          <div class="group">
+            <a href="#">
+              <GooglePlayLg />
+            </a>
+          </div>
+          <div class="group">
+            <a href="#">
+              <AppStoreLg/>
+            </a>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
-  <a href="/#Publish" class="my-14"><img class="hidden lg:block h-auto mb-8 max-w-5xl rounded-lg mx-auto"
-      src="../assets/banner.jpg" alt="banner de rent car" /></a>
-  <section class="bg-white mb-12 max-w-6xl mx-auto">
-    <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16">
-      <div class="bg-gray-50 border-gray-200 rounded-lg p-8 md:p-12 mb-8">
-        <span
-          class="bg-blue-100 text-blue-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-md mb-2">
-          Prestar
-        </span>
-        <h1 class="text-gray-900 text-3xl md:text-5xl font-extrabold mb-2">
-          ¿Es fácil alquilar mi auto?
-        </h1>
-        <p class="text-lg font-normal text-gray-500 mb-6">
-          Generar ingresos alquilando tu auto nunca fue tán fácil. Comenzá ahora
-          <a href="/#Login" class="text-blue-600 0 hover:underline">iniciando sesión</a>
-          o
-          <a href="/#Register" class="text-blue-600 0 hover:underline">creando una cuenta</a>
-          para publicar tu vehículo. Recibirás un respuesta de tu petición en un
-          lapso de 2 a 5 días
-        </p>
-        <a href="/#Publish"
-          class="inline-flex justify-center items-center py-2.5 px-5 text-base font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300">
-          Publicar
-          <svg class="w-3.5 h-3.5 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-            viewBox="0 0 14 10">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M1 5h12m0 0L9 1m4 4L9 9" />
-          </svg>
+      <ConectingCars/>
+    </section>
+
+    <section class="flex flex-col items-center gap-8 sm:gap-12 sm:w-10/12 m-auto">
+      <ZurichxReemo/>
+      <article class="flex flex-col items-center gap-3">
+        <Heading :type="2" class="text-center">Seguros contra todo riesgo Zurich</Heading>
+        <p class="text-center max-w-[570px]">Ofrecemos seguros contra todo riesgo con Zurich, para que puedas disfrutar de tu viaje con total tranquilidad.</p>
+        <a href="" class="flex items-center gap-4 py-2 px-4 rounded-xl bg-secondary-100 w-fit">
+          <ABS/>
+          <span class="font-semibold">Atención 24hs - 11 1122 3344</span>
         </a>
+      </article>
+      <div class="sm:flex gap-4">
+        <div class="sm:w-[310px] shadow-custom px-6 py-12 flex flex-col gap-16 rounded-[36px]">
+          <article class="flex flex-col gap-2 text-pretty">
+            <Heading :type="3">¿Cómo funciona Reemo?</Heading>
+            <p class="text-lg font-regular leading-tight">Aquellos dueños dispuestos a prestar su auto a cambio de dinero, lo registran y las personas que necesitan uno temporalmente, lo alquilan.</p>
+            <a href="" class="flex items-center gap-4 py-2 px-4 rounded-xl bg-secondary-100 w-fit">
+              Más información
+            </a>
+          </article>
+          <figure class="rounded-2xl overflow-hidden">
+            <img class="w-full" src="/src/assets/home/shake-hand.png" alt="">
+          </figure>
+        </div>
+
+        <div class="sm:w-[310px] shadow-custom px-6 py-12 flex flex-col gap-16 rounded-[36px]">
+          <article class="flex flex-col gap-2">
+            <Heading :type="3">Proceso 100% digital</Heading>
+            <p class="text-lg font-regular leading-tight">En Reemo, todo el proceso es completamente digital y sin complicaciones. Reservá, pagá y obtené tu auto de forma rápida y sencilla.</p>
+            <a href="" class="flex items-center gap-4 py-2 px-4 rounded-xl bg-secondary-100 w-fit">
+              Más información
+            </a>
+          </article>
+          <figure class="rounded-2xl overflow-hidden">
+            <img class="w-full" src="/src/assets/home/women-phone.png" alt="">
+          </figure>
+        </div>
+
+        <div class="sm:w-[310px] shadow-custom px-6 py-12 flex flex-col gap-16 rounded-[36px]">
+          <article class="flex flex-col gap-2">
+            <Heading :type="3">Impacto en Argentina</Heading>
+            <p class="text-lg font-regular leading-tight">Al alquilar un auto en Reemo, aparte de cuidar tu economía, evitando el cargo de mantener uno propio, ayudas a los dueños que lo publican.</p>
+            <a href="" class="flex items-center gap-4 py-2 px-4 rounded-xl bg-secondary-100 w-fit">
+              Más información
+            </a>
+          </article>
+          <figure class="rounded-2xl overflow-hidden">
+            <img class="w-full" src="/src/assets/home/women-car.png" alt="">
+          </figure>
+        </div>
       </div>
-      <div class="grid md:grid-cols-2 gap-8">
-        <div class="bg-gray-50 border border-gray-200 rounded-lg p-8 md:p-12">
-          <span
-            class="bg-green-100 text-green-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-md mb-2">
-            Alquilar
-          </span>
-          <h2 class="text-gray-900 text-3xl font-extrabold mb-2">
-            ¿Qué necesito para usar un auto?
-          </h2>
-          <p class="text-lg font-normal text-gray-500 mb-4">
-            Cualquier persona con registro de conducir puede alquilar un auto.
-            Solamente tenés que
-            <a href="/Login" class="text-blue-600 0 hover:underline">iniciar sesión</a>
-            o
-            <a href="/Register" class="text-blue-600 0 hover:underline">crear una cuenta</a>
-            para alquilar el vehículo de algún dueño. Recibirás un respuesta de
-            tu petición en un lapso de 2 a 5 días
-          </p>
+    </section>
+
+    <section class="flex flex-col gap-16">
+    <Heading :type="2" class="text-center">Con Reemo,<br>tranquilo a todos lados</Heading>
+    <div class="flex flex-col items-center justify-center sm:flex-row gap-4">
+      <article class="bg-primary-900 pl-9 py-11 flex flex-col gap-16 rounded-[40px] w-full group relative">
+        <div class="flex flex-col gap-4 w-96">
+          <Heading :type="3" class="text-white">Publicá tu vehículo</Heading>
+          <p class="text-lg font-regular leading-tight text-slate-600">Registrá tu auto en menos de 10 minutos y dejálo listo para ser alquilado.</p>
         </div>
-        <div class="bg-gray-50 border border-gray-200 rounded-lg p-8 md:p-12">
-          <span
-            class="bg-blue-100 text-blue-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-md mb-2">
-            General
-          </span>
-          <h2 class="text-gray-900 text-3xl font-extrabold mb-2">
-            ¿Necesito mucho tiempo para publicar un auto?
-          </h2>
-          <p class="text-lg font-normal text-gray-500 mb-4">
-            El proceso de creación de una publicación de auto no lleva más de 10
-            minutos. Ténes que ingresar datos del mismo, como la patente,
-            kilometraje, marca, modelo, etc. Y depués de entre 2 a 5 días hábiles
-            recibirás una respuesta positiva si los datos son correctos
-          </p>
+        <div class="flex flex-row-reverse">
+          <PublishYourCar />
         </div>
+        <a href="" class="flex items-center justify-between py-2 px-5 rounded-xl bg-primary-800 text-white w-36">
+          <span>Publicar</span>
+          <LongArrow/>
+        </a>
+      </article>
+      <article class="bg-gradient-to-r to-secondary-300 from-secondary-100 pl-9 py-11 flex flex-col gap-16 rounded-[40px] w-full group relative">
+        <div class="flex flex-col gap-4 w-96">
+          <Heading :type="3">Alquilá un auto</Heading>
+          <p class="text-lg font-regular leading-tight text-slate-600">Conseguí un vehículo que se adapte a vos y comenzá a disfrutarlo.</p>
+        </div>
+        <div class="flex flex-row-reverse">
+          <RentYourCar />
+        </div>
+        <a href="" class="flex items-center justify-between py-2 px-5 rounded-xl bg-secondary-300 text-white w-36">
+          <span>Ver autos</span>
+          <LongArrow/>
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section class="flex flex-col gap-16">
+    <div class="flex flex-col items-center gap-4">
+      <Heading :type="2" class="text-center ">🚙<br/>Alquileres express</Heading>
+      <p class="inline">Rápidos, seguros y confiables</p>
+      <NotificationExpress/>
+    </div>
+
+    <div class="flex flex-col gap-5">
+      <article class="px-9 py-11 w-full rounded-[40px] shadow-custom flex flex-row">
+        <div class="flex flex-col justify-between flex-1">
+          <div>
+            <Heading :type="3">Contactáte inmediatamente<br/> con el dueño</Heading>
+          <p class="w-96 text-slate-600">Con Reemo podés hablar por medio de chat con el dueño del auto luego de haber reservado el mismo para ultimar detalles del alquiler</p>
+          </div>
+
+          <a href="" class="flex items-center justify-between py-2 px-5 rounded-xl bg-secondary-900 text-white w-36">
+            <span>Ver autos</span>
+            <LongArrow/>
+          </a>
+        </div>
+         <RentsExpress class="flex flex-1 mr-16"/>
+      </article>
+      <div class="flex flex-col flex-1 items-center justify-center sm:flex-row gap-4">
+        <article class="bg-secondary-100 pl-9 py-11 flex flex-col rounded-[40px] w-full group relative">
+          <Heading :type="3">Viví momentos <br/>inolvidables</Heading>
+          <div class="flex flex-row-reverse">
+            <Moments />
+          </div>
+        </article>
+        <article class="bg-primary-900 pl-9 py-11 flex flex-col rounded-[40px] w-full group relative">
+          <Heading :type="3" class="text-white">Generá ingresos <br/>extras sin esfuerzo</Heading>
+          <div class="flex flex-row-reverse">
+            <Income />
+          </div>
+        </article>
       </div>
     </div>
   </section>
+
+  <section class="flex flex-col gap-16">
+    <div class="flex flex-col items-center gap-4">
+      <Heading :type="2" class="text-center ">🚙<br/>Gran variedad</Heading>
+      <p class="inline">Conseguí un auto que se adapte a tus necesidades</p>
+    </div>
+
+    <div class="flex flex-col gap-5">
+      <div class="flex flex-col flex-1 items-center justify-center sm:flex-row gap-4">
+        <div class="flex flex-col flex-1 gap-4">
+          <article class="bg-primary-900 px-9 py-11 flex flex-row justify-between items-center rounded-[40px] w-full">
+            <div class="flex flex-col gap-16">
+              <Heading :type="3" class="text-white">Viví momentos <br/>inolvidables</Heading>
+              <button class="bg-secondary-900 w-fit px-6 rounded-full">
+                <LongArrow/>
+                <span class="sr-only">Ver más</span>
+              </button>
+            </div>
+            <Replay/>
+          </article>
+          <article class="bg-primary-900 px-9 py-11 flex flex-row justify-between items-center rounded-[40px] w-full">
+            <div class="flex flex-col gap-16">
+              <Heading :type="3" class="text-white">Buscá y encontrá <br/>tu auto ideal</Heading>
+              <button class="bg-secondary-900 w-fit px-6 rounded-full">
+                <LongArrow/>
+                <span class="sr-only">Ver más</span>
+              </button>
+            </div>
+            <Search/>
+          </article>
+        </div>
+
+        <article class="bg-secondary-100 pl-9 py-11 flex flex-col flex-1 rounded-[40px] w-full group relative overflow-hidden">
+          <Heading :type="3">Todas las marcas <br/>y todos los modelos</Heading>
+          <div class="flex flex-row-reverse">
+            <Brands class="-m-20"/>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="flex flex-col gap-5 items-center">
+    <Heading :type="2" class="text-center">Preguntas frecuentes</Heading>
+    <div class="flex flex-col sm:gap-4 w-10/12 m-auto">
+      <Dropdown class="flex flex-col bg-secondary-100 px-8 py-5 rounded-3xl">
+        <template #title>
+          <Heading type="5">¿Qué necesito para abrir una cuenta en Reemo?</Heading>
+        </template>
+        <p class="pt-4">Para registrarte en Reemo, solo necesitas un correo electrónico válido, una contraseña segura y algunos datos personales básicos para configurar tu perfil. Una vez que completes estos pasos, podrás empezar a alquilar o rentar autos en nuestra plataforma.</p>
+      </Dropdown>
+      <Dropdown class="flex flex-col bg-secondary-100 px-8 py-5 rounded-3xl">
+        <template #title>
+          <Heading type="5">¿Cuáles son los beneficios de usar Reemo?</Heading>
+        </template>
+        <p class="pt-4">Con Reemo, disfrutás de una serie de ventajas tanto si sos propietario como si necesitás un auto temporalmente:</p>
+        <ul class="pt-2 list-disc list-inside">
+          <li><b>Propietarios:</b> Generá ingresos adicionales con tu auto, sin esfuerzo y con total seguridad gracias a nuestros seguros contra todo riesgo.</li>
+          <li><b>Usuarios:</b> Alquilá un auto cuando lo necesites, sin tener que asumir los costos de mantenimiento de uno propio.</li>
+          <li><b>Proceso digital:</b> Desde la búsqueda hasta la reserva y el pago, todo se realiza de forma 100% online.</li>
+          <li><b>Atención 24/7:</b> Contás con un equipo de soporte disponible las 24 horas para cualquier consulta.</li>
+        </ul>
+      </Dropdown>
+      <Dropdown class="flex flex-col bg-secondary-100 px-8 py-5 rounded-3xl">
+        <template #title>
+          <Heading type="5">¿Cómo puedo poner mi auto en alquiler en Reemo?</Heading>
+        </template>
+        <p class="pt-4">Publicar tu vehículo en Reemo es muy sencillo:</p>
+        <ul class="pt-2 list-disc list-inside">
+          <li>Registrate y completá el perfil de tu auto (datos básicos, fotos y documentación).</li>
+          <li>Establecé la tarifa por día y la ubicación donde se podrá recoger.</li>
+          <li>Una vez que esté aprobado, tu auto estará disponible para ser alquilado por otros usuarios.</li>
+        </ul>
+      </Dropdown>
+      <Dropdown class="flex flex-col bg-secondary-100 px-8 py-5 rounded-3xl">
+        <template #title>
+          <Heading type="5">¿Cómo funciona el seguro de los autos en Reemo?</Heading>
+        </template>
+        <p class="pt-4">Todos los vehículos registrados en nuestra plataforma están protegidos por un seguro contra todo riesgo con Zurich, lo que significa que tanto el propietario como el arrendatario están cubiertos en caso de accidentes, daños o robos durante el período de alquiler.</p>
+      </Dropdown>
+    </div>
+    <a href="" class="flex items-center gap-4 py-2 px-4 rounded-2xl bg-secondary-900 w-fit">
+      <span class="font-semibold text-white">Ir a todas las preguntas</span>
+      <LongArrow/>
+    </a>
+  </section>
+  <section>
+    <article class="bg-gradient-to-r to-primary-900 from-secondary-900 px-9 py-11 w-full rounded-[40px] shadow-custom flex flex-col items-center text-white overflow-hidden gap-4">
+      <Experience class="-mt-20"/>
+      <Heading :type="3" class="text-white">¿Qué esperás para vivir la experiencia Reemo?</Heading>
+      <p>Descargá la app y empezá a alquilar o rentar autos en minutos.</p>
+      <QR/>
+    </article>
+    <p class="flex text-sm text-slate-500 items-center gap-1 p-1 justify-center">
+      <InfoSm/>
+      <span>Disponible en App Store y Play Store</span>
+    </p>
+  </section>
+  </div>
 </template>

@@ -29,9 +29,17 @@ export default {
 
 <template>
   <div class="alert-container">
-    <transition-group name="slide-bounce">
-      <div class="alert-msj" v-for="alert in alerts" :key="alert.id">
-        <div :class="`alert alert-${alert.severity}`">
+    <transition-group 
+      name="slide-bounce"
+      >
+      <div 
+        class="alert-msj"
+        v-for="alert in alerts"
+        :key="alert.id" 
+      >
+        <div 
+          :class="`alert alert-${alert.severity}`" 
+          >
           <span class="icon" v-if="iconComponent">
             <component :is="iconComponent(alert.severity)" />
           </span>
@@ -50,12 +58,10 @@ export default {
   position: fixed;
   bottom: 0;
   left: 0;
-  width: 100%;
-  /* Ocupa el ancho completo */
+  width: 100%; /* Ocupa el ancho completo */
   gap: .2rem;
   z-index: 1000;
 }
-
 .alert-msj {
   display: flex;
   align-items: center;
@@ -105,16 +111,13 @@ export default {
     opacity: 0;
     transform: translateY(100%);
   }
-
   60% {
     opacity: 1;
     transform: translateY(-10px);
   }
-
   80% {
     transform: translateY(5px);
   }
-
   100% {
     transform: translateY(0);
   }
@@ -125,11 +128,9 @@ export default {
     opacity: 1;
     transform: translateY(0);
   }
-
   20% {
     transform: translateY(-5px);
   }
-
   100% {
     opacity: 0;
     transform: translateY(100%);

@@ -4,7 +4,7 @@ import { unsubscribeToPublication, toggleAvailability } from '@services/publicat
 import { addAlert } from "@services/alerts.js";
 
 import Heading from "../atoms/Heading.vue";
-import ArrowRight from '@icons/ArrowRight.vue';
+import Arrow from '@icons/Arrow.vue';
 import Chasis from '@icons/Chasis.vue';
 import Transmition from '@icons/Transmition.vue';
 import defaultCarImage from '@assets/Car-Img.png';
@@ -23,7 +23,7 @@ export default {
       };
     },
     name: 'CardCar',
-    components: { Heading, ArrowRight, Transmition, Chasis, PopoverPublication },
+    components: { Heading, Arrow, Transmition, Chasis, PopoverPublication },
     props: {
       car: {
         type: Object,
@@ -125,7 +125,7 @@ async handleToggleAvailability(carId) {
           class="w-full flex justify-between items-center rounded-xl bg-secondary-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-secondary-800 focus:outline-none focus:text-secondary-900 focus:ring-4 focus:ring-secondary-900  focus:bg-white"
         >
           <span>Ver Detalles</span>
-          <ArrowRight class="hover:text-secondary-900"/>
+          <Arrow direction="right" class="hover:text-secondary-900"/>
         </button>        
       </div>
     </div>

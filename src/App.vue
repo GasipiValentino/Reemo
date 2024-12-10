@@ -93,6 +93,7 @@ html {
     margin: 0;
     font-family:
       "Onest",
+      sans-serif,
       system-ui,
       -apple-system,
       BlinkMacSystemFont,

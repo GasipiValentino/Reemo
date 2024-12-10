@@ -17,19 +17,19 @@ export default {
     textSize() {
       // Establece tamaños de texto según el tipo de encabezado
       return {
-        1: "text-3xl mb-4 sm:text-4xl",
-        2: "text-3xl mb-3 sm:text-2xl",
-        3: "text-2xl mb-2 sm:text-xl",
+        1: "font-medium leading-tight text-5xl block mb-4 sm:text-6xl",
+        2: "text-4xl mb-3 sm:text-4xl",
+        3: "text-2xl mb-2 font-semibold sm:font-medium sm:text-3xl",
         4: "text-xl mb-1 sm:text-lg",
-        5: "text-lg mb-0.5 sm:text-md",
-        6: "text-base",
+        5: "text-lg mb-0.5 font-bold sm:text-md",
+        6: "text-sm",
       }[this.type];
     },
   },
 };
 </script>
 <template>
-  <component :is="tag" :class="`${textSize} font-bold text-gray-900 `">
+  <component :is="tag" :class="`${textSize} font-medium text-primary-900 sm:leading-tight`">
     <slot />
   </component>
 </template>
